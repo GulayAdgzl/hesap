@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        generate_for:
+          exclude:
+            - lib/core/database/app_database.dart
+            - lib/core/tables/product_table.dart
+            - lib/core/tables/daily_stock_table.dart
+            - lib/features/product/data/models/product_model.dart
+            - lib/features/stock/data/models/daily_stock_model.dart
