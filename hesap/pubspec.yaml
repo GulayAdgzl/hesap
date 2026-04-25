@@ -27,6 +27,7 @@ dependencies:
   share_plus: ^13.0.0
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

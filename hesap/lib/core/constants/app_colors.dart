@@ -20,4 +20,13 @@ class AppColors {
   static const warningLight = Color(0xFFFFF5E6);
   static const danger = Color(0xFFF76F6F);
   static const dangerLight = Color(0xFFFFE8E8);
+
+  // Settings
+  static const settingsSectionLabel = Color(0xFF9090A8);
+  static const settingsDivider = Color(0xFFF0EEF8);
+  static const settingsToggleActive = Color(0xFF7C6FF7);
+  static const settingsLogoutText = Color(0xFFF76F6F);
+  static const settingsLogoutBg = Color(0xFFFFE8E8);
+  static const settingsRowBg = Color(0xFFFFFFFF);
+  static const settingsChevron = Color(0xFFC0BDD8);
 }

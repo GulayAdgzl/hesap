@@ -69,8 +69,6 @@ class AppTextStyles {
     color: AppColors.primary,
   );
 
-  // Mevcut dosyaya şunları ekle:
-
   static const dateCaption = TextStyle(
     fontSize: 11,
     color: AppColors.muted,
@@ -117,5 +115,38 @@ class AppTextStyles {
     fontSize: 10,
     fontWeight: FontWeight.w700,
     color: AppColors.danger,
+  );
+
+  // Settings
+  static const settingsSectionLabel = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    color: AppColors.settingsSectionLabel,
+    letterSpacing: .8,
+  );
+
+  static const settingsRowTitle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.dark,
+  );
+
+  static const settingsRowSubtitle = TextStyle(
+    fontSize: 12,
+    color: AppColors.muted,
+  );
+
+  static const settingsRowValue = TextStyle(
+    fontFamily: 'Syne',
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primary,
+  );
+
+  static const settingsLogoutButton = TextStyle(
+    fontFamily: 'Syne',
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    color: AppColors.settingsLogoutText,
   );
 }

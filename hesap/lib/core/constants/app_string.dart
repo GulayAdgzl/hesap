@@ -54,9 +54,7 @@ class AppStrings {
   static const remaining = 'Kalan';
   static const max = 'Max';
 
-// Mevcut dosyaya şunları ekle:
-
-// Günlük Giriş sayfası
+  // Günlük Giriş sayfası
   static const dailyEntryTitle = 'Günlük Stok Girişi';
   static const dailyEntrySubtitle =
       'Bugün kalan miktarı gir, tüketim otomatik hesaplanır';
@@ -70,13 +68,62 @@ class AppStrings {
   static const criticalLabel = '⚠️ Kritik';
   static const noProductsDaily = 'Henüz ürün yok';
   static const noProductsDailyHint = 'Önce Ürünler sayfasından ürün ekle';
+
   // Navigation
-static const String csvExport = 'CSV Olarak Dışa Aktar';
-static const String exporting = 'Dışa Aktarılıyor...';
+  static const String csvExport = 'CSV Olarak Dışa Aktar';
+  static const String exporting = 'Dışa Aktarılıyor...';
   static const navHome = 'Ana Sayfa';
   static const navProducts = 'Ürünler';
   static const navDaily = 'Günlük';
   static const navReports = 'Raporlar';
   static const navSettings = 'Ayarlar';
   static const navComingSoon = 'Yakında eklenecek';
+
+  // Ayarlar sayfası — UI metinleri
+  static const settingsTitle = 'Ayarlar';
+
+  static const settingsSectionStock = 'STOK AYARLARI';
+  static const settingsKritikStokEsigi = 'Kritik Stok Eşiği';
+  static const settingsKritikStokEsigiSubtitle = 'Bu oranın altında uyar';
+  static const settingsTahminPeriyodu = 'Tahmin Periyodu';
+  static const settingsTahminPeriyoduSubtitle = 'Kaç günlük ortalama alınsın';
+  static const settingsTahminPeriyoduSuffix = ' Gün';
+
+  static const settingsSectionNotifications = 'BİLDİRİMLER';
+  static const settingsKritikStokBildirimLabel = 'Kritik Stok Bildirimi';
+  static const settingsKritikStokBildirimSubtitle =
+      'Stok kritik seviyede bildir';
+  static const settingsGunlukOzetLabel = 'Günlük Özet';
+  static const settingsGunlukOzetSubtitle = 'Her sabah 08:00\'de özet';
+  static const settingsUretimTahminiLabel = 'Üretim Tahmini';
+  static const settingsUretimTahminiSubtitle = 'Yarın için tahmin bildirimi';
+
+  static const settingsSectionApp = 'UYGULAMA';
+  static const settingsKoyuTemaLabel = 'Koyu Tema';
+  static const settingsDilLabel = 'Dil';
+  static const settingsDilValue = 'Türkçe';
+
+  static const settingsLogout = 'Çıkış Yap';
+  static const settingsLogoutConfirmTitle = 'Çıkış Yap';
+  static const settingsLogoutConfirmMessage =
+      'Hesabından çıkış yapmak istediğine emin misin?';
+  static const settingsLogoutConfirm = 'Evet, Çıkış Yap';
+
+  // Ayarlar — SharedPreferences Keys
+  static const keyCriticalStockThreshold = 'critical_stock_threshold';
+  static const keyForecastPeriod = 'forecast_period';
+  static const keyCriticalStockNotification = 'critical_stock_notification';
+  static const keyDailySummary = 'daily_summary';
+  static const keyProductionForecast = 'production_forecast';
+  static const keyDarkMode = 'dark_mode';
+  static const keyLanguage = 'language';
+
+  // Ayarlar — Varsayılan Değerler
+  static const double defaultCriticalStockThreshold = 15.0; // %15
+  static const int defaultForecastPeriod = 7; // 7 gün
+  static const bool defaultCriticalStockNotification = true;
+  static const bool defaultDailySummary = true;
+  static const bool defaultProductionForecast = false;
+  static const bool defaultDarkMode = false;
+  static const String defaultLanguage = 'Türkçe';
 }
