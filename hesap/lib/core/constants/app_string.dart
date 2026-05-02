@@ -109,6 +109,15 @@ class AppStrings {
       'Hesabından çıkış yapmak istediğine emin misin?';
   static const settingsLogoutConfirm = 'Evet, Çıkış Yap';
 
+  // Ayarlar — Desteklenen Diller
+  static const List<String> supportedLanguages = [
+    'Türkçe',
+    'English',
+    'Deutsch',
+    'Français',
+    'Español',
+  ];
+
   // Ayarlar — SharedPreferences Keys
   static const keyCriticalStockThreshold = 'critical_stock_threshold';
   static const keyForecastPeriod = 'forecast_period';

@@ -9,6 +9,8 @@ import 'package:hesap/features/stock/presentation/bloc/daily_entry_cubit.dart';
 import 'package:hesap/features/stock/presentation/pages/daily_entry_page.dart';
 import 'package:hesap/features/reports/presentation/bloc/reports_cubit.dart';
 import 'package:hesap/features/reports/presentation/pages/reports_page.dart';
+import 'package:hesap/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:hesap/features/settings/presentation/pages/settings_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -29,6 +31,7 @@ class _MainNavigationState extends State<MainNavigation> {
         BlocProvider(create: (_) => di.sl<ProductCubit>()),
         BlocProvider(create: (_) => di.sl<DailyEntryCubit>()),
         BlocProvider(create: (_) => di.sl<ReportsCubit>()),
+        BlocProvider(create: (_) => di.sl<SettingsCubit>()),
       ],
       child: Scaffold(
         body: IndexedStack(
@@ -39,8 +42,7 @@ class _MainNavigationState extends State<MainNavigation> {
             ProductsPage(),
             DailyEntryPage(),
             ReportsPage(),
-            PlaceholderPage(
-                label: AppStrings.navSettings, icon: Icons.settings_rounded),
+            SettingsPage(),
           ],
         ),
         bottomNavigationBar: Container(

@@ -129,4 +129,60 @@ class AppDecorations {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
       );
+
+  // ─── Mevcut AppDecorations class'ının içine, son } kapanışından ÖNCE ekle ───
+
+  // Settings
+  static BoxDecoration get settingsCard => BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      );
+
+  static BoxDecoration get settingsAvatarContainer => BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF7C6FF7), Color(0xFFB06EF7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF7C6FF7).withOpacity(0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      );
+
+  static BoxDecoration get settingsLogoutButton => BoxDecoration(
+        color: AppColors.settingsLogoutBg,
+        borderRadius: BorderRadius.circular(14),
+      );
+
+  static BoxDecoration get settingsIconBox => BoxDecoration(
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(10),
+      );
+
+  static BoxDecoration get settingsIconBoxWarning => BoxDecoration(
+        color: AppColors.warningLight,
+        borderRadius: BorderRadius.circular(10),
+      );
+
+  static BoxDecoration get settingsIconBoxSuccess => BoxDecoration(
+        color: AppColors.successLight,
+        borderRadius: BorderRadius.circular(10),
+      );
+
+  static BoxDecoration get settingsIconBoxDanger => BoxDecoration(
+        color: AppColors.dangerLight,
+        borderRadius: BorderRadius.circular(10),
+      );
 }
