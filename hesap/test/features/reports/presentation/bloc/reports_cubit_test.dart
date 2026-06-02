@@ -1,14 +1,14 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hesap/feature/reports/domain/usecases/get_report_summary.dart';
+import 'package:hesap/feature/reports/domain/usecases/get_top_consumed.dart';
+import 'package:hesap/feature/reports/presentation/bloc/reports_cubit.dart';
+import 'package:hesap/feature/reports/presentation/bloc/reports_state.dart';
+import 'package:hesap/module/csv_export/csv_export_service.dart';
+import 'package:hesap/module/report_summary/entities/report_filter.dart';
+import 'package:hesap/module/report_summary/entities/report_summary.dart';
+import 'package:hesap/module/report_summary/entities/top_consumed_item.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:hesap/features/reports/data/services/csv_export_service.dart';
-import 'package:hesap/features/reports/domain/entities/report_filter.dart';
-import 'package:hesap/features/reports/domain/entities/report_summary.dart';
-import 'package:hesap/features/reports/domain/entities/top_consumed_item.dart';
-import 'package:hesap/features/reports/domain/usecases/get_report_summary.dart';
-import 'package:hesap/features/reports/domain/usecases/get_top_consumed.dart';
-import 'package:hesap/features/reports/presentation/bloc/reports_cubit.dart';
-import 'package:hesap/features/reports/presentation/bloc/reports_state.dart';
 
 // ---------------------------------------------------------------------------
 // Mocks

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hesap/features/reports/domain/entities/report_filter.dart';
-import 'package:hesap/features/reports/domain/entities/report_summary.dart';
+import 'package:hesap/module/report_summary/entities/report_filter.dart';
+import 'package:hesap/module/report_summary/entities/report_summary.dart';
 
 void main() {
   group('ReportFilter', () {

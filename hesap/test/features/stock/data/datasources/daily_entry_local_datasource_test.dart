@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hesap/feature/stock/data/datasources/daily_entry_datasource.dart';
+import 'package:hesap/product/model/daily_stock_entry_model.dart';
 import 'package:hive_ce/hive.dart';
-
-import 'package:hesap/core/models/daily_stock_entry_model.dart';
-import 'package:hesap/features/stock/data/datasources/daily_entry_datasource.dart';
 
 void main() {
   late Box<DailyStockEntryModel> box;

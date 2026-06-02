@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:hesap/features/settings/data/datasources/settings_local_datasource.dart'
+import 'package:hesap/feature/settings/data/datasources/settings_local_datasource.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 

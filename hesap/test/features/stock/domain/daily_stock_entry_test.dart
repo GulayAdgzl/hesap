@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hesap/features/stock/domain/entities/daily_stock_entry.dart';
+import 'package:hesap/feature/stock/domain/entities/daily_stock_entry.dart';
 
 void main() {
   group('DailyStockEntryX', () {

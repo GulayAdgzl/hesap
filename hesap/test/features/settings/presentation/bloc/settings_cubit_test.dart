@@ -1,18 +1,17 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hesap/core/constants/app_string.dart';
 import 'package:hesap/core/errror/failure.dart';
-import 'package:hesap/core/service/notification_service.dart';
+import 'package:hesap/feature/settings/domain/entities/app_settings.dart';
+import 'package:hesap/feature/settings/domain/repositories/settings_repository.dart';
+import 'package:hesap/feature/settings/domain/usecases/get_settings.dart';
+import 'package:hesap/feature/settings/domain/usecases/save_settings.dart';
+import 'package:hesap/feature/settings/presentation/bloc/settings_cubit.dart';
+import 'package:hesap/feature/settings/presentation/bloc/settings_state.dart';
+import 'package:hesap/module/notification/notification_service.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:hesap/core/constants/app_string.dart';
-
-import 'package:hesap/features/settings/domain/entities/app_settings.dart';
-import 'package:hesap/features/settings/domain/repositories/settings_repository.dart';
-import 'package:hesap/features/settings/domain/usecases/get_settings.dart';
-import 'package:hesap/features/settings/domain/usecases/save_settings.dart';
-import 'package:hesap/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:hesap/features/settings/presentation/bloc/settings_state.dart';
 
 import 'settings_cubit_test.mocks.dart';
 
@@ -231,10 +230,8 @@ void main() {
       seed: () => const SettingsLoading(),
       act: (c) => c.updateDarkMode(true),
       expect: () => [],
-      verify: (_) {
-        verifyNever(
-            mockSaveSetting(key: anyNamed('key'), value: anyNamed('value')));
-      },
+      verify: (_) => verifyNever(
+          mockSaveSetting(key: anyNamed('key'), value: anyNamed('value'))),
     );
 
     blocTest<SettingsCubit, SettingsState>(
@@ -243,10 +240,8 @@ void main() {
       seed: () => const SettingsError(message: 'hata'),
       act: (c) => c.updateDarkMode(true),
       expect: () => [],
-      verify: (_) {
-        verifyNever(
-            mockSaveSetting(key: anyNamed('key'), value: anyNamed('value')));
-      },
+      verify: (_) => verifyNever(
+          mockSaveSetting(key: anyNamed('key'), value: anyNamed('value'))),
     );
   });
 

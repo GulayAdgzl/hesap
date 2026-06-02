@@ -4,13 +4,12 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/presentation/bloc/product_cubit.dart';
-import 'package:hesap/features/product/presentation/bloc/product_state.dart';
-import 'package:hesap/features/product/presentation/pages/products_page.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/pages/products_page.dart';
+import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_cubit.dart';
+import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_state.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockProductCubit extends MockCubit<ProductState>
     implements ProductCubit {}

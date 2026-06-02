@@ -2,15 +2,14 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hesap/core/errror/failure.dart';
-import 'package:hesap/features/product/presentation/bloc/product_cubit.dart';
-import 'package:hesap/features/product/presentation/bloc/product_state.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_cubit.dart';
+import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_state.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/add_product_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/delete_product_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/get_all_products_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/update_product_usecase.dart';
 import 'package:mocktail/mocktail.dart';
-
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/domain/usecases/add_product_usecase.dart';
-import 'package:hesap/features/product/domain/usecases/delete_product_usecase.dart';
-import 'package:hesap/features/product/domain/usecases/get_all_products_usecase.dart';
-import 'package:hesap/features/product/domain/usecases/update_product_usecase.dart';
 
 class MockGetAllProductsUseCase extends Mock implements GetAllProductsUseCase {}
 
@@ -151,7 +150,9 @@ void main() {
       expect: () => [
         isA<ProductStateLoading>(),
         isA<ProductStateLoaded>().having(
-            (s) => s.products.any((p) => p.id == '1'), 'id=1 yok', false),
+            (s) => s.products.any((p) => p is Product ? p.id == '1' : false),
+            'id=1 yok',
+            false),
       ],
     );
 

@@ -2,18 +2,16 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hesap/core/errror/failure.dart';
+import 'package:hesap/feature/stock/domain/usecases/get_last_entry_usecase.dart';
+import 'package:hesap/feature/stock/domain/usecases/save_daily_entries_usecase.dart';
+import 'package:hesap/feature/stock/presentation/bloc/daily_entry_cubit.dart';
+import 'package:hesap/feature/stock/presentation/bloc/daily_entry_state.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/get_all_products_usecase.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/domain/usecases/get_all_products_usecase.dart';
-import 'package:hesap/features/stock/domain/usecases/get_last_entry_usecase.dart';
-import 'package:hesap/features/stock/domain/usecases/save_daily_entries_usecase.dart';
-import 'package:hesap/features/stock/presentation/bloc/daily_entry_cubit.dart';
-import 'package:hesap/features/stock/presentation/bloc/daily_entry_state.dart';
-
 import 'daily_entry_cubit_load_test.mocks.dart';
-import 'daily_entry_cubit_load_test.mocks.dart' hide MockGetAllProductsUseCase;
 
 @GenerateMocks([
   GetAllProductsUseCase,

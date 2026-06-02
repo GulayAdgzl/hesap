@@ -1,14 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hesap/core/constants/app_string.dart';
 import 'package:hesap/core/errror/failure.dart';
+import 'package:hesap/feature/settings/data/datasources/settings_local_datasource.dart';
+import 'package:hesap/feature/settings/data/repositories/settings_repository_impl.dart';
+import 'package:hesap/feature/settings/domain/entities/app_settings.dart';
+import 'package:hesap/product/model/app_settings_model.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:hesap/core/constants/app_string.dart';
-
-import 'package:hesap/features/settings/data/datasources/settings_local_datasource.dart';
-import 'package:hesap/features/settings/data/models/app_settings_model.dart';
-import 'package:hesap/features/settings/data/repositories/settings_repository_impl.dart';
-import 'package:hesap/features/settings/domain/entities/app_settings.dart';
 
 import 'settings_repository_impl_test.mocks.dart';
 

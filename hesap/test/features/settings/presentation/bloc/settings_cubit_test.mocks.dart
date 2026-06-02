@@ -7,15 +7,15 @@ import 'dart:async' as _i5;
 
 import 'package:dartz/dartz.dart' as _i3;
 import 'package:hesap/core/errror/failure.dart' as _i6;
-import 'package:hesap/core/service/notification_service.dart' as _i9;
-import 'package:hesap/features/settings/domain/entities/app_settings.dart'
+import 'package:hesap/feature/settings/domain/entities/app_settings.dart'
     as _i7;
-import 'package:hesap/features/settings/domain/repositories/settings_repository.dart'
+import 'package:hesap/feature/settings/domain/repositories/settings_repository.dart'
     as _i2;
-import 'package:hesap/features/settings/domain/usecases/get_settings.dart'
+import 'package:hesap/feature/settings/domain/usecases/get_settings.dart'
     as _i4;
-import 'package:hesap/features/settings/domain/usecases/save_settings.dart'
+import 'package:hesap/feature/settings/domain/usecases/save_settings.dart'
     as _i8;
+import 'package:hesap/module/notification/notification_service.dart' as _i9;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint

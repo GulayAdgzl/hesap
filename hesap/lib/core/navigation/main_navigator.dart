@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hesap/core/constants/app_colors.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/injection_container.dart' as di;
-import 'package:hesap/features/product/presentation/bloc/product_cubit.dart';
-import 'package:hesap/features/product/presentation/pages/products_page.dart';
-import 'package:hesap/features/stock/presentation/bloc/daily_entry_cubit.dart';
-import 'package:hesap/features/stock/presentation/pages/daily_entry_page.dart';
-import 'package:hesap/features/reports/presentation/bloc/reports_cubit.dart';
-import 'package:hesap/features/reports/presentation/pages/reports_page.dart';
-import 'package:hesap/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:hesap/features/settings/presentation/pages/settings_page.dart';
+import 'package:hesap/feature/reports/presentation/bloc/reports_cubit.dart';
+import 'package:hesap/feature/reports/presentation/pages/reports_page.dart';
+import 'package:hesap/feature/settings/presentation/bloc/settings_cubit.dart';
+import 'package:hesap/feature/settings/presentation/pages/settings_page.dart';
+import 'package:hesap/feature/stock/presentation/bloc/daily_entry_cubit.dart';
+import 'package:hesap/feature/stock/presentation/pages/daily_entry_page.dart';
+import 'package:hesap/feature/sub_feature/product/pages/products_page.dart';
+import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_cubit.dart';
+import 'package:hesap/product/initialize/injection_container.dart' as di;
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

@@ -1,12 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hesap/core/errror/failure.dart';
+import 'package:hesap/feature/stock/domain/entities/daily_stock_entry.dart';
+import 'package:hesap/feature/stock/domain/repositories/daily_entry_repository.dart';
+import 'package:hesap/feature/stock/domain/usecases/get_last_entry_usecase.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-
-import 'package:hesap/features/stock/domain/entities/daily_stock_entry.dart';
-import 'package:hesap/features/stock/domain/repositories/daily_entry_repository.dart';
-import 'package:hesap/features/stock/domain/usecases/get_last_entry_usecase.dart';
 
 import 'get_last_entry_usecase_test.mocks.dart';
 

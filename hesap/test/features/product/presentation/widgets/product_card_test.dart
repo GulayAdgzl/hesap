@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/presentation/widgets/product_card.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/product/widget/product_card.dart';
 
 Product fakeProduct({
   String id = 'test-id',

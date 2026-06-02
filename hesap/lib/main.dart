@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hesap/core/models/daily_stock_entry_model.dart';
-import 'package:hesap/core/models/product_model.dart';
 import 'package:hesap/core/navigation/main_navigator.dart';
-import 'package:hesap/core/service/notification_service.dart';
 import 'package:hesap/core/theme/app_theme.dart';
-
-import 'package:hesap/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:hesap/features/settings/presentation/bloc/settings_state.dart';
-
-import 'package:hesap/injection_container.dart';
-import 'package:hive_ce/hive.dart';
+import 'package:hesap/feature/settings/presentation/bloc/settings_cubit.dart';
+import 'package:hesap/feature/settings/presentation/bloc/settings_state.dart';
+import 'package:hesap/module/notification/notification_service.dart';
+import 'package:hesap/product/initialize/injection_container.dart';
+import 'package:hesap/product/model/daily_stock_entry_model.dart';
+import 'package:hesap/product/model/product_model.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -22,8 +19,11 @@ void main() async {
   Hive.registerAdapter(DailyStockEntryModelAdapter());
 
   await init();
-  await NotificationService.instance.init();
-  await NotificationService.instance.requestPermission();
+
+  // NotificationService DI üzerinden init + izin
+  await sl<NotificationService>().init();
+  await sl<NotificationService>().requestPermission();
+
   runApp(const MyApp());
 }
 
@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           final isDark =
               state is SettingsLoaded ? state.settings.darkMode : false;
-
           return MaterialApp(
             title: 'Hesap App',
             debugShowCheckedModeBanner: false,

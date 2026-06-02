@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:hesap/feature/sub_feature/product/data/datasources/product_local_datasource.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/product/model/product_model.dart';
 import 'package:hive_ce/hive.dart';
-
-import 'package:hesap/core/models/product_model.dart';
-import 'package:hesap/features/product/data/datasources/product_local_datasource.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockBox extends Mock implements Box<ProductModel> {}
 

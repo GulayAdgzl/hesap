@@ -7,9 +7,9 @@ import 'dart:async' as _i4;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:hesap/core/errror/failure.dart' as _i5;
-import 'package:hesap/features/stock/domain/entities/daily_stock_entry.dart'
+import 'package:hesap/feature/stock/domain/entities/daily_stock_entry.dart'
     as _i6;
-import 'package:hesap/features/stock/domain/repositories/daily_entry_repository.dart'
+import 'package:hesap/feature/stock/domain/repositories/daily_entry_repository.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 

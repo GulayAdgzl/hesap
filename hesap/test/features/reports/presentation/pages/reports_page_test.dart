@@ -1,22 +1,21 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:bloc_test/bloc_test.dart';
-
 import 'package:hesap/core/constants/app_colors.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/reports/domain/entities/report_filter.dart';
-import 'package:hesap/features/reports/domain/entities/report_summary.dart';
-import 'package:hesap/features/reports/domain/entities/top_consumed_item.dart';
-import 'package:hesap/features/reports/presentation/bloc/reports_cubit.dart';
-import 'package:hesap/features/reports/presentation/bloc/reports_state.dart';
-import 'package:hesap/features/reports/presentation/pages/reports_page.dart';
-import 'package:hesap/features/reports/presentation/widgets/reports_filter_bar.dart';
-import 'package:hesap/features/reports/presentation/widgets/reports_summary_grid.dart';
-import 'package:hesap/features/reports/presentation/widgets/reports_trend_chart.dart';
-import 'package:hesap/features/reports/presentation/widgets/reports_top_consumed_list.dart';
-import 'package:hesap/features/reports/presentation/widgets/reports_csv_export_button.dart';
+import 'package:hesap/feature/reports/presentation/bloc/reports_cubit.dart';
+import 'package:hesap/feature/reports/presentation/bloc/reports_state.dart';
+import 'package:hesap/feature/reports/presentation/pages/reports_page.dart';
+import 'package:hesap/feature/reports/presentation/widgets/reports_csv_export_button.dart';
+import 'package:hesap/feature/reports/presentation/widgets/reports_filter_bar.dart';
+import 'package:hesap/feature/reports/presentation/widgets/reports_summary_grid.dart';
+import 'package:hesap/feature/reports/presentation/widgets/reports_top_consumed_list.dart';
+import 'package:hesap/feature/reports/presentation/widgets/reports_trend_chart.dart';
+import 'package:hesap/module/report_summary/entities/report_filter.dart';
+import 'package:hesap/module/report_summary/entities/report_summary.dart';
+import 'package:hesap/module/report_summary/entities/top_consumed_item.dart';
+import 'package:mocktail/mocktail.dart';
 
 // ---------------------------------------------------------------------------
 // Mock

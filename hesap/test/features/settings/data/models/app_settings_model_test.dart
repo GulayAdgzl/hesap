@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/settings/data/models/app_settings_model.dart';
-import 'package:hesap/features/settings/domain/entities/app_settings.dart';
+import 'package:hesap/feature/settings/domain/entities/app_settings.dart';
+import 'package:hesap/product/model/app_settings_model.dart';
 
 void main() {
   // ── Test fixtures ──────────────────────────────────────────────────────────

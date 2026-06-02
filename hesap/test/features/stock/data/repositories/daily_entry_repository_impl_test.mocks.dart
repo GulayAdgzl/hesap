@@ -5,9 +5,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:hesap/features/stock/data/datasources/daily_entry_datasource.dart'
+import 'package:hesap/feature/stock/data/datasources/daily_entry_datasource.dart'
     as _i2;
-import 'package:hesap/features/stock/domain/entities/daily_stock_entry.dart'
+import 'package:hesap/feature/stock/domain/entities/daily_stock_entry.dart'
     as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 

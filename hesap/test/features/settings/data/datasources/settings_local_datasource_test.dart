@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/settings/data/datasources/settings_local_datasource.dart';
+import 'package:hesap/feature/settings/data/datasources/settings_local_datasource.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   late SettingsLocalDataSourceImpl datasource;

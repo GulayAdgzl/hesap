@@ -2,12 +2,11 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
 import 'package:hesap/core/errror/failure.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/domain/repositories/product_repository.dart';
-import 'package:hesap/features/product/domain/usecases/get_all_products_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/data/repositories/product_repository.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/get_all_products_usecase.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
 

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
-import 'package:hesap/features/product/presentation/utils/product_filter.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/pages/product_filter.dart';
 
 Product fakeProduct({
   String id = 'test-id',
@@ -114,7 +114,7 @@ void main() {
         search: '',
       );
       expect(result.length, 2);
-      expect(result.any((p) => p.name == 'Un'), false);
+      expect(result.any((p) => p is Product && p.name == 'Un'), false);
     });
   });
 

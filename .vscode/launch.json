@@ -1,0 +1,29 @@
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "hesap",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "FLAVOR=development",
+                "--dart-define",
+                "FLAVOR=dev_key_123"
+            ]
+        },
+        {
+            "name": "hesap-development  flavor",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "FLAVOR=production",
+                "--dart-define",
+                "FLAVOR=prod_key_456"
+            ]
+        }
+    ]
+}

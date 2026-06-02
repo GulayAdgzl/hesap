@@ -2,12 +2,11 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
 import 'package:hesap/core/errror/failure.dart';
-import 'package:hesap/features/product/data/datasources/product_local_datasource.dart';
-import 'package:hesap/features/product/data/repositories/product_repository_impl.dart';
-import 'package:hesap/features/product/domain/entities/product.dart';
+import 'package:hesap/feature/sub_feature/product/data/datasources/product_local_datasource.dart';
+import 'package:hesap/feature/sub_feature/product/data/repositories/product_repository_impl.dart';
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockProductLocalDatasource extends Mock
     implements ProductLocalDatasource {}

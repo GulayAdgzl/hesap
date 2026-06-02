@@ -7,19 +7,20 @@ import 'dart:async' as _i6;
 
 import 'package:dartz/dartz.dart' as _i3;
 import 'package:hesap/core/errror/failure.dart' as _i7;
-import 'package:hesap/features/product/domain/entities/product.dart' as _i8;
-import 'package:hesap/features/product/domain/repositories/product_repository.dart'
-    as _i2;
-import 'package:hesap/features/product/domain/usecases/get_all_products_usecase.dart'
-    as _i5;
-import 'package:hesap/features/stock/domain/entities/daily_stock_entry.dart'
+import 'package:hesap/feature/stock/domain/entities/daily_stock_entry.dart'
     as _i10;
-import 'package:hesap/features/stock/domain/repositories/daily_entry_repository.dart'
+import 'package:hesap/feature/stock/domain/repositories/daily_entry_repository.dart'
     as _i4;
-import 'package:hesap/features/stock/domain/usecases/get_last_entry_usecase.dart'
+import 'package:hesap/feature/stock/domain/usecases/get_last_entry_usecase.dart'
     as _i11;
-import 'package:hesap/features/stock/domain/usecases/save_daily_entries_usecase.dart'
+import 'package:hesap/feature/stock/domain/usecases/save_daily_entries_usecase.dart'
     as _i9;
+import 'package:hesap/feature/sub_feature/product/data/repositories/product_repository.dart'
+    as _i2;
+import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart'
+    as _i8;
+import 'package:hesap/feature/sub_feature/product/usecases/get_all_products_usecase.dart'
+    as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint

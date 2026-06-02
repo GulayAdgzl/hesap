@@ -1,8 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hesap/features/reports/data/services/csv_export_service.dart';
-import 'package:hesap/features/reports/domain/entities/report_filter.dart';
-import 'package:hesap/features/reports/domain/entities/top_consumed_item.dart';
+import 'package:hesap/module/csv_export/csv_export_service.dart';
+import 'package:hesap/module/report_summary/entities/top_consumed_item.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
