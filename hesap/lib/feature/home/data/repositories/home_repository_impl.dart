@@ -1,10 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:hesap/core/errror/failure.dart';
+import 'package:hesap/feature/home/domain/entities/product_stock.dart';
 
 import '../../domain/entities/home_summary.dart';
-import '../../domain/entities/weekly_consumption.dart';
-import '../../domain/entities/stock_alert.dart';
 import '../../domain/entities/production_forecast.dart';
+import '../../domain/entities/stock_alert.dart';
+import '../../domain/entities/weekly_consumption.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_local_datasource.dart';
 
@@ -27,7 +28,7 @@ class HomeRepositoryImpl implements HomeRepository {
           await localDataSource.getForecastsData(forecastPeriod);
 
       return Right(HomeSummary(
-        totalStockValue: (summaryData['totalStockValue'] as num).toDouble(),
+        totalConsumption: (summaryData['totalConsumption'] as num).toDouble(),
         dailyCost: (summaryData['dailyCost'] as num).toDouble(),
         criticalProductCount: summaryData['criticalProductCount'] as int,
         topConsumedProductName:
@@ -36,8 +37,11 @@ class HomeRepositoryImpl implements HomeRepository {
             (summaryData['topConsumedAmount'] as num?)?.toDouble(),
         topConsumedUnit: summaryData['topConsumedUnit'] as String?,
         alerts: _mapAlerts(alertsData),
-        weeklyConsumption: [WeeklyConsumption(days: _mapDailyList(weeklyData))],
+        weeklyConsumption: _mapWeeklyConsumption(weeklyData),
         productionForecasts: _mapForecasts(forecastsData),
+        productStocks: _mapProductStocks(
+          (summaryData['productStocks'] as List).cast<Map<String, dynamic>>(),
+        ),
       ));
     } catch (e) {
       return Left(CacheFailure(e.toString()));
@@ -48,7 +52,7 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Either<Failure, WeeklyConsumption>> getWeeklyConsumption() async {
     try {
       final data = await localDataSource.getWeeklyConsumptionData();
-      return Right(WeeklyConsumption(days: _mapDailyList(data)));
+      return Right(_mapWeeklyConsumption(data));
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
@@ -74,7 +78,16 @@ class HomeRepositoryImpl implements HomeRepository {
     }
   }
 
-  // ── Private mappers ────────────────────────────────────────────────────────
+  // ── Private mappers ───────────────────────────────────────────────
+
+  WeeklyConsumption _mapWeeklyConsumption(Map<String, dynamic> data) {
+    return WeeklyConsumption(
+      days: _mapDailyList(
+        (data['days'] as List).cast<Map<String, dynamic>>(),
+      ),
+      previousWeekTotal: (data['previousWeekTotal'] as num).toDouble(),
+    );
+  }
 
   List<DailyConsumption> _mapDailyList(List<Map<String, dynamic>> data) {
     return data
@@ -93,7 +106,7 @@ class HomeRepositoryImpl implements HomeRepository {
               productName: d['productName'] as String,
               remainingAmount: (d['remainingAmount'] as num).toDouble(),
               unit: d['unit'] as String,
-              estimatedDaysLeft: d['estimatedDaysLeft'] as int,
+              estimatedDaysLeft: (d['estimatedDaysLeft'] as num).toDouble(),
               criticalThreshold: (d['criticalThreshold'] as num).toDouble(),
               severity: d['severity'] == 'critical'
                   ? AlertSeverity.critical
@@ -118,5 +131,17 @@ class HomeRepositoryImpl implements HomeRepository {
                 : ForecastTrend.stable,
       );
     }).toList();
+  }
+
+  List<ProductStock> _mapProductStocks(List<Map<String, dynamic>> data) {
+    return data
+        .map((d) => ProductStock(
+              productId: d['productId'] as String,
+              productName: d['productName'] as String,
+              unit: d['unit'] as String,
+              remainingAmount: (d['remainingAmount'] as num).toDouble(),
+              consumedToday: (d['consumedToday'] as num).toDouble(),
+            ))
+        .toList();
   }
 }

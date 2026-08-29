@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_colors.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -20,17 +19,20 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ratio =
         product.maxStock > 0 ? product.quantity / product.maxStock : 0.0;
-    final status = _stockStatus(ratio);
+    final status = _stockStatus(context, ratio);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSizes.lg,
+        vertical: AppSizes.xs + 1,
+      ),
+      padding: const EdgeInsets.all(AppSizes.base),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        color: context.appTheme.cardBackground,
+        borderRadius: AppRadius.lgBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
+            color: context.colors.primary.withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 2),
           ),
@@ -40,63 +42,66 @@ class ProductCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              // Ürün ikonu
               Container(
-                width: 44,
-                height: 44,
+                width: AppSizes.huge - AppSizes.xs,
+                height: AppSizes.huge - AppSizes.xs,
                 decoration: BoxDecoration(
                   color: status.bgColor,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.smBorderRadius,
                 ),
                 child: const Center(
                   child: Text('📦', style: TextStyle(fontSize: 20)),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSizes.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(product.name, style: AppTextStyles.productName),
+                    Text(product.name, style: context.textTheme.labelLarge),
                     const SizedBox(height: 2),
                     Text(
                       'Birim: ${product.unit} · ₺${product.price}/${product.unit}',
-                      style: AppTextStyles.productMeta,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.appTheme.muted,
+                      ),
                     ),
                   ],
                 ),
               ),
               _ActionButton(
                 icon: '✏️',
-                color: AppColors.primaryLight,
+                color: context.appTheme.brandSecondary,
                 onTap: onEdit,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSizes.xs + 2),
               _ActionButton(
                 icon: '🗑️',
-                color: AppColors.dangerLight,
+                color: context.appTheme.dangerContainer,
                 onTap: onDelete,
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.md),
           Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: AppRadius.xsBorderRadius,
                 child: LinearProgressIndicator(
                   value: ratio.clamp(0.0, 1.0),
                   minHeight: 5,
-                  backgroundColor: AppColors.primaryLight,
+                  backgroundColor: context.appTheme.brandSecondary,
                   valueColor: AlwaysStoppedAnimation(status.barColor),
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSizes.xs + 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '${AppStrings.remaining}: ${product.quantity} ${product.unit}',
-                    style: AppTextStyles.caption.copyWith(
+                    style: context.textTheme.bodySmall?.copyWith(
                       color: status.textColor,
                       fontWeight: FontWeight.w600,
                     ),
@@ -105,19 +110,23 @@ class ProductCard extends StatelessWidget {
                     children: [
                       Text(
                         '${AppStrings.max} ${product.maxStock} ${product.unit}',
-                        style: AppTextStyles.caption,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.appTheme.muted,
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSizes.sm),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 3),
+                          horizontal: AppSizes.sm + 2,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: status.bgColor,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: AppRadius.fullBorderRadius,
                         ),
                         child: Text(
                           status.label,
-                          style: AppTextStyles.caption.copyWith(
+                          style: context.textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: status.textColor,
                           ),
@@ -134,27 +143,27 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  _StockStatus _stockStatus(double ratio) {
+  _StockStatus _stockStatus(BuildContext context, double ratio) {
     if (ratio <= 0.1) {
       return _StockStatus(
         label: AppStrings.statusCritical,
-        barColor: AppColors.danger,
-        bgColor: AppColors.dangerLight,
-        textColor: AppColors.danger,
+        barColor: context.appTheme.danger,
+        bgColor: context.appTheme.dangerContainer,
+        textColor: context.appTheme.danger,
       );
     } else if (ratio <= 0.4) {
       return _StockStatus(
         label: AppStrings.statusWarning,
-        barColor: AppColors.warning,
-        bgColor: AppColors.warningLight,
-        textColor: AppColors.warning,
+        barColor: context.appTheme.warning,
+        bgColor: context.appTheme.warningContainer,
+        textColor: context.appTheme.warning,
       );
     } else {
       return _StockStatus(
         label: AppStrings.statusNormal,
-        barColor: AppColors.success,
-        bgColor: AppColors.successLight,
-        textColor: AppColors.success,
+        barColor: context.appTheme.success,
+        bgColor: context.appTheme.successContainer,
+        textColor: context.appTheme.success,
       );
     }
   }
@@ -190,11 +199,11 @@ class _ActionButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 30,
-        height: 30,
+        width: AppSizes.xxl - 2,
+        height: AppSizes.xxl - 2,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.smBorderRadius,
         ),
         child: Center(
           child: Text(icon, style: const TextStyle(fontSize: 13)),

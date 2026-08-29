@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_colors.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 
 class ReportsTrendChart extends StatelessWidget {
   final Map<DateTime, double> series;
@@ -11,13 +10,18 @@ class ReportsTrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.base,
+        AppSizes.base,
+        AppSizes.base,
+        AppSizes.sm,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        color: context.appTheme.cardBackground,
+        borderRadius: AppRadius.lgBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.07),
+            color: context.colors.primary.withOpacity(0.07),
             blurRadius: 14,
             offset: const Offset(0, 2),
           ),
@@ -26,39 +30,85 @@ class ReportsTrendChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Günlük Maliyet Trendi', style: AppTextStyles.sectionTitle),
-          const SizedBox(height: 4),
+          Text(
+            'Günlük Maliyet Trendi',
+            style: context.textTheme.titleSmall,
+          ),
+          const SizedBox(height: AppSizes.xs),
           Text(
             'Bu hafta için başlıca maliyet değişimi',
-            style: AppTextStyles.caption,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: context.appTheme.muted,
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.base),
           SizedBox(
             height: 130,
             child: series.isEmpty
-                ? const Center(
-                    child: Text('Veri yok',
-                        style: TextStyle(color: AppColors.muted)),
+                ? Center(
+                    child: Text(
+                      'Veri yok',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: context.appTheme.muted,
+                      ),
+                    ),
                   )
-                : _buildChart(),
+                : _ReportsTrendChartBody(
+                    series: series,
+                    primaryColor: context.colors.primary,
+                    gridLineColor: context.appTheme.divider,
+                    mutedColor: context.appTheme.muted,
+                    tooltipBg: context.isDark
+                        ? const Color(0xFF2E2E4E)
+                        : const Color(0xFF1A1A2E),
+                  ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildChart() {
+/// Chart body ayrı widget'a alındı — context renkleri parametre olarak geçiliyor,
+/// böylece fl_chart callback'leri içinde BuildContext gerekmez.
+class _ReportsTrendChartBody extends StatelessWidget {
+  final Map<DateTime, double> series;
+  final Color primaryColor;
+  final Color gridLineColor;
+  final Color mutedColor;
+  final Color tooltipBg;
+
+  const _ReportsTrendChartBody({
+    required this.series,
+    required this.primaryColor,
+    required this.gridLineColor,
+    required this.mutedColor,
+    required this.tooltipBg,
+  });
+
+  static const List<String> _days = [
+    'Pzt',
+    'Sal',
+    'Çar',
+    'Per',
+    'Cum',
+    'Cmt',
+    'Paz'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
     final sorted = series.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
-    final spots = sorted.asMap().entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value.value);
-    }).toList();
+    final spots = sorted
+        .asMap()
+        .entries
+        .map((e) => FlSpot(e.key.toDouble(), e.value.value))
+        .toList();
 
     final maxY = sorted.map((e) => e.value).reduce((a, b) => a > b ? a : b);
     final minY = sorted.map((e) => e.value).reduce((a, b) => a < b ? a : b);
-
-    final days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 
     return LineChart(
       LineChartData(
@@ -69,38 +119,35 @@ class ReportsTrendChart extends StatelessWidget {
           drawVerticalLine: false,
           horizontalInterval: maxY > 0 ? maxY / 3 : 1,
           getDrawingHorizontalLine: (_) => FlLine(
-            color: AppColors.inputBorder,
+            color: gridLineColor,
             strokeWidth: 1,
           ),
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 24,
               getTitlesWidget: (value, meta) {
                 final idx = value.toInt();
-                if (idx < 0 || idx >= sorted.length) {
-                  return const SizedBox();
-                }
-                final date = sorted[idx].key;
-                final label = days[date.weekday - 1];
+                if (idx < 0 || idx >= sorted.length) return const SizedBox();
+                final label = _days[sorted[idx].key.weekday - 1];
                 return Padding(
-                  padding: const EdgeInsets.only(top: 6),
+                  padding: const EdgeInsets.only(top: AppSizes.xs + 2),
                   child: Text(
                     label,
-                    style: AppTextStyles.caption
-                        .copyWith(fontSize: 10, color: AppColors.muted),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: mutedColor,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 );
               },
@@ -109,7 +156,7 @@ class ReportsTrendChart extends StatelessWidget {
         ),
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (_) => AppColors.dark.withOpacity(0.85),
+            getTooltipColor: (_) => tooltipBg.withOpacity(0.9),
             getTooltipItems: (spots) => spots
                 .map(
                   (s) => LineTooltipItem(
@@ -129,14 +176,14 @@ class ReportsTrendChart extends StatelessWidget {
             spots: spots,
             isCurved: true,
             curveSmoothness: 0.35,
-            color: AppColors.primary,
+            color: primaryColor,
             barWidth: 2.5,
             isStrokeCapRound: true,
             dotData: FlDotData(
               show: true,
               getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
                 radius: 3.5,
-                color: AppColors.primary,
+                color: primaryColor,
                 strokeWidth: 2,
                 strokeColor: Colors.white,
               ),
@@ -145,8 +192,8 @@ class ReportsTrendChart extends StatelessWidget {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.18),
-                  AppColors.primary.withOpacity(0.0),
+                  primaryColor.withOpacity(0.18),
+                  primaryColor.withOpacity(0.0),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

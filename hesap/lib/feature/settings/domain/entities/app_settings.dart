@@ -1,12 +1,4 @@
-class AppSettings {
-  final double criticalStockThreshold;
-  final int forecastPeriod;
-  final bool criticalStockNotification;
-  final bool dailySummary;
-  final bool productionForecast;
-  final bool darkMode;
-  final String language;
-
+final class AppSettings {
   const AppSettings({
     required this.criticalStockThreshold,
     required this.forecastPeriod,
@@ -16,6 +8,49 @@ class AppSettings {
     required this.darkMode,
     required this.language,
   });
+
+  final double criticalStockThreshold;
+  final int forecastPeriod;
+  final bool criticalStockNotification;
+  final bool dailySummary;
+  final bool productionForecast;
+  final bool darkMode;
+
+  /// Locale kodu (örn. 'tr', 'en'). Display label için
+  /// `AppLanguage.fromCode(language).label` kullanılmalı.
+  final String language;
+
+  AppSettings copyWith({
+    double? criticalStockThreshold,
+    int? forecastPeriod,
+    bool? criticalStockNotification,
+    bool? dailySummary,
+    bool? productionForecast,
+    bool? darkMode,
+    String? language,
+  }) {
+    return AppSettings(
+      criticalStockThreshold:
+          criticalStockThreshold ?? this.criticalStockThreshold,
+      forecastPeriod: forecastPeriod ?? this.forecastPeriod,
+      criticalStockNotification:
+          criticalStockNotification ?? this.criticalStockNotification,
+      dailySummary: dailySummary ?? this.dailySummary,
+      productionForecast: productionForecast ?? this.productionForecast,
+      darkMode: darkMode ?? this.darkMode,
+      language: language ?? this.language,
+    );
+  }
+
+  static const AppSettings defaults = AppSettings(
+    criticalStockThreshold: 15.0,
+    forecastPeriod: 7,
+    criticalStockNotification: true,
+    dailySummary: true,
+    productionForecast: false,
+    darkMode: false,
+    language: 'tr',
+  );
 
   @override
   bool operator ==(Object other) {

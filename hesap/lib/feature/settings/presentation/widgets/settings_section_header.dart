@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 
 class SettingsSectionHeader extends StatelessWidget {
   final String title;
@@ -10,8 +9,15 @@ class SettingsSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 2),
-      child: Text(title, style: AppTextStyles.settingsSectionLabel),
+      padding: const EdgeInsets.only(left: AppSizes.xs, bottom: 2),
+      child: Text(
+        title,
+        style: context.textTheme.labelSmall?.copyWith(
+          color: context.appTheme.muted,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.8,
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
-import 'package:hesap/core/constants/app_string.dart';
+import 'package:hesap/core/constants/settings_keys.dart';
+import 'package:hesap/feature/settings/domain/entities/app_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class SettingsLocalDataSource {
@@ -15,27 +16,26 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Future<Map<String, dynamic>> getSettings() async {
     return {
-      AppStrings.keyCriticalStockThreshold:
-          sharedPreferences.getDouble(AppStrings.keyCriticalStockThreshold) ??
-              AppStrings.defaultCriticalStockThreshold,
-      AppStrings.keyForecastPeriod:
-          sharedPreferences.getInt(AppStrings.keyForecastPeriod) ??
-              AppStrings.defaultForecastPeriod,
-      AppStrings.keyCriticalStockNotification:
-          sharedPreferences.getBool(AppStrings.keyCriticalStockNotification) ??
-              AppStrings.defaultCriticalStockNotification,
-      AppStrings.keyDailySummary:
-          sharedPreferences.getBool(AppStrings.keyDailySummary) ??
-              AppStrings.defaultDailySummary,
-      AppStrings.keyProductionForecast:
-          sharedPreferences.getBool(AppStrings.keyProductionForecast) ??
-              AppStrings.defaultProductionForecast,
-      AppStrings.keyDarkMode:
-          sharedPreferences.getBool(AppStrings.keyDarkMode) ??
-              AppStrings.defaultDarkMode,
-      AppStrings.keyLanguage:
-          sharedPreferences.getString(AppStrings.keyLanguage) ??
-              AppStrings.defaultLanguage,
+      SettingsKeys.criticalStockThreshold:
+          sharedPreferences.getDouble(SettingsKeys.criticalStockThreshold) ??
+              AppSettings.defaults.criticalStockThreshold,
+      SettingsKeys.forecastPeriod:
+          sharedPreferences.getInt(SettingsKeys.forecastPeriod) ??
+              AppSettings.defaults.forecastPeriod,
+      SettingsKeys.criticalStockNotification:
+          sharedPreferences.getBool(SettingsKeys.criticalStockNotification) ??
+              AppSettings.defaults.criticalStockNotification,
+      SettingsKeys.dailySummary:
+          sharedPreferences.getBool(SettingsKeys.dailySummary) ??
+              AppSettings.defaults.dailySummary,
+      SettingsKeys.productionForecast:
+          sharedPreferences.getBool(SettingsKeys.productionForecast) ??
+              AppSettings.defaults.productionForecast,
+      SettingsKeys.darkMode: sharedPreferences.getBool(SettingsKeys.darkMode) ??
+          AppSettings.defaults.darkMode,
+      SettingsKeys.language:
+          sharedPreferences.getString(SettingsKeys.language) ??
+              AppSettings.defaults.language,
     };
   }
 
@@ -56,12 +56,12 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
 
   @override
   Future<void> clearSettings() async {
-    await sharedPreferences.remove(AppStrings.keyCriticalStockThreshold);
-    await sharedPreferences.remove(AppStrings.keyForecastPeriod);
-    await sharedPreferences.remove(AppStrings.keyCriticalStockNotification);
-    await sharedPreferences.remove(AppStrings.keyDailySummary);
-    await sharedPreferences.remove(AppStrings.keyProductionForecast);
-    await sharedPreferences.remove(AppStrings.keyDarkMode);
-    await sharedPreferences.remove(AppStrings.keyLanguage);
+    await sharedPreferences.remove(SettingsKeys.criticalStockThreshold);
+    await sharedPreferences.remove(SettingsKeys.forecastPeriod);
+    await sharedPreferences.remove(SettingsKeys.criticalStockNotification);
+    await sharedPreferences.remove(SettingsKeys.dailySummary);
+    await sharedPreferences.remove(SettingsKeys.productionForecast);
+    await sharedPreferences.remove(SettingsKeys.darkMode);
+    await sharedPreferences.remove(SettingsKeys.language);
   }
 }

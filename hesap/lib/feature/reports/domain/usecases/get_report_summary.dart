@@ -1,11 +1,11 @@
-import '../../../../module/report_summary/entities/report_filter.dart';
-import '../../../../module/report_summary/entities/report_summary.dart';
-import '../repositories/reports_repository.dart';
+import 'package:hesap/feature/reports/domain/repositories/reports_repository.dart';
+import 'package:hesap/module/report_summary/entities/report_filter.dart';
+import 'package:hesap/module/report_summary/entities/report_summary.dart';
 
-class GetReportSummary {
-  final ReportsRepository _repository;
-
+final class GetReportSummary {
   const GetReportSummary(this._repository);
+
+  final ReportsRepository _repository;
 
   Future<ReportSummary> call(ReportFilter filter) =>
       _repository.getSummary(filter);

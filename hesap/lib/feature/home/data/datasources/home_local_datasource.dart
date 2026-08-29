@@ -5,7 +5,7 @@ import '../../../../product/model/product_model.dart';
 
 abstract class HomeLocalDataSource {
   Future<Map<String, dynamic>> getHomeSummaryData();
-  Future<List<Map<String, dynamic>>> getWeeklyConsumptionData();
+  Future<Map<String, dynamic>> getWeeklyConsumptionData();
   Future<List<Map<String, dynamic>>> getAlertsData();
   Future<List<Map<String, dynamic>>> getForecastsData(int forecastPeriod);
 }
@@ -19,7 +19,7 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     required this.entryBox,
   });
 
-  // ── getHomeSummaryData ─────────────────────────────────────────────────────
+  // ── getHomeSummaryData ────────────────────────────────────────────
 
   @override
   Future<Map<String, dynamic>> getHomeSummaryData() async {
@@ -27,44 +27,51 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     final entries = entryBox.values.toList();
     final todayStr = _dateKey(DateTime.now());
 
-    double totalStockValue = 0;
+    double totalConsumption = 0; // "Toplam Tüketim" kartı — kg/gün
     double dailyCost = 0;
     int criticalCount = 0;
     String? topConsumedName;
     double topConsumedAmount = 0;
     String? topConsumedUnit;
+    final productStocks = <Map<String, dynamic>>[];
 
     for (final product in products) {
-      // Ürünün son entry'si → mevcut stok
       final productEntries = _entriesForProduct(product.id, entries);
       final latestStock = productEntries.isEmpty
           ? product.quantity.toDouble()
           : productEntries.first.currentQuantity.toDouble();
 
-      // Toplam stok değeri = mevcut stok × birim fiyat
-      totalStockValue += latestStock * product.price;
-
-      // Bugünkü tüketim
       final todayEntry =
           productEntries.where((e) => _dateKey(e.date) == todayStr).toList();
 
+      double consumedToday = 0;
       if (todayEntry.isNotEmpty) {
-        // consumed = previousQuantity - currentQuantity
-        final consumed = (todayEntry.first.previousQuantity -
+        consumedToday = (todayEntry.first.previousQuantity -
                 todayEntry.first.currentQuantity)
             .toDouble()
             .clamp(0.0, double.infinity);
 
-        dailyCost += consumed * product.price;
+        // "Toplam Tüketim" kartı: bugün tüketilen miktarların (kg) toplamı
+        totalConsumption += consumedToday;
+        // "Günlük Maliyet" kartı: tüketilen miktar × birim fiyat
+        dailyCost += consumedToday * product.price;
 
-        if (consumed > topConsumedAmount) {
-          topConsumedAmount = consumed;
+        if (consumedToday > topConsumedAmount) {
+          topConsumedAmount = consumedToday;
           topConsumedName = product.name;
           topConsumedUnit = product.unit;
         }
       }
 
-      // Kritik kontrol: mevcut stok / maxStock <= criticalThreshold%
+      // "Ürün Stokları" listesi
+      productStocks.add({
+        'productId': product.id,
+        'productName': product.name,
+        'unit': product.unit,
+        'remainingAmount': latestStock,
+        'consumedToday': consumedToday,
+      });
+
       if (product.maxStock > 0) {
         final ratio = latestStock / product.maxStock;
         if (ratio <= product.criticalThreshold / 100) {
@@ -73,23 +80,28 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       }
     }
 
+    // En çok tüketilen üründen aza doğru sırala
+    productStocks.sort((a, b) =>
+        (b['consumedToday'] as double).compareTo(a['consumedToday'] as double));
+
     return {
-      'totalStockValue': totalStockValue,
+      'totalConsumption': totalConsumption,
       'dailyCost': dailyCost,
       'criticalProductCount': criticalCount,
       'topConsumedProductName': topConsumedName,
       'topConsumedAmount': topConsumedAmount,
       'topConsumedUnit': topConsumedUnit,
+      'productStocks': productStocks,
     };
   }
 
-  // ── getWeeklyConsumptionData ───────────────────────────────────────────────
+  // ── getWeeklyConsumptionData ──────────────────────────────────────
 
   @override
-  Future<List<Map<String, dynamic>>> getWeeklyConsumptionData() async {
+  Future<Map<String, dynamic>> getWeeklyConsumptionData() async {
     final now = DateTime.now();
     final entries = entryBox.values.toList();
-    final result = <Map<String, dynamic>>[];
+    final days = <Map<String, dynamic>>[];
 
     for (int i = 6; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
@@ -98,7 +110,6 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       final dayEntries =
           entries.where((e) => _dateKey(e.date) == dateStr).toList();
 
-      // Toplam günlük tüketim
       final actual = dayEntries.fold<double>(
         0.0,
         (sum, e) =>
@@ -108,17 +119,34 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
 
       final forecast = _calculateForecast(date, entries);
 
-      result.add({
+      days.add({
         'date': date.millisecondsSinceEpoch,
         'actual': actual,
         'forecast': forecast,
       });
     }
 
-    return result;
+    // "+%28 geçen haftaya göre" için önceki 7 günün (8-14 gün önce) toplamı
+    double previousWeekTotal = 0;
+    for (int i = 13; i >= 7; i--) {
+      final dateStr = _dateKey(now.subtract(Duration(days: i)));
+      final dayEntries =
+          entries.where((e) => _dateKey(e.date) == dateStr).toList();
+      previousWeekTotal += dayEntries.fold<double>(
+        0.0,
+        (sum, e) =>
+            sum +
+            (e.previousQuantity - e.currentQuantity).clamp(0, double.infinity),
+      );
+    }
+
+    return {
+      'days': days,
+      'previousWeekTotal': previousWeekTotal,
+    };
   }
 
-  // ── getAlertsData ──────────────────────────────────────────────────────────
+  // ── getAlertsData ─────────────────────────────────────────────────
 
   @override
   Future<List<Map<String, dynamic>>> getAlertsData() async {
@@ -140,7 +168,8 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       if (ratio > threshold) continue;
 
       final avgDaily = _averageDailyConsumption(product.id, entries);
-      final daysLeft = avgDaily > 0 ? (latestStock / avgDaily).floor() : 999;
+      // "1.5 gün" gibi ondalık gösterim için floor() kaldırıldı
+      final daysLeft = avgDaily > 0 ? latestStock / avgDaily : 999.0;
 
       alerts.add({
         'productId': product.id,
@@ -153,13 +182,13 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       });
     }
 
-    alerts.sort((a, b) => (a['estimatedDaysLeft'] as int)
-        .compareTo(b['estimatedDaysLeft'] as int));
+    alerts.sort((a, b) => (a['estimatedDaysLeft'] as double)
+        .compareTo(b['estimatedDaysLeft'] as double));
 
     return alerts;
   }
 
-  // ── getForecastsData ───────────────────────────────────────────────────────
+  // ── getForecastsData ──────────────────────────────────────────────
 
   @override
   Future<List<Map<String, dynamic>>> getForecastsData(
@@ -172,11 +201,9 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       final productEntries = _entriesForProduct(product.id, entries);
       if (productEntries.isEmpty) continue;
 
-      // Son forecastPeriod entry'nin ortalaması
       final recent = productEntries.take(forecastPeriod).toList();
       final avgRecent = _avgConsumed(recent);
 
-      // Önceki period ortalaması → trend
       final older =
           productEntries.skip(forecastPeriod).take(forecastPeriod).toList();
       final avgOlder = older.isEmpty ? avgRecent : _avgConsumed(older);
@@ -209,7 +236,7 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     return forecasts;
   }
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  // ── Private helpers ───────────────────────────────────────────────
 
   String _dateKey(DateTime date) =>
       '${date.year}-${date.month.toString().padLeft(2, '0')}-'

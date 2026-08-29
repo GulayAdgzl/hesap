@@ -1,50 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hesap/core/constants/app_colors.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
-import 'package:hesap/feature/reports/presentation/bloc/reports_cubit.dart';
-import 'package:hesap/feature/reports/presentation/bloc/reports_state.dart';
+import 'package:hesap/core/theme/theme.dart';
 
-class ReportsCsvExportButton extends StatelessWidget {
-  const ReportsCsvExportButton({super.key});
+/// CSV dışa aktarma butonu.
+///
+/// Bloc bağımlılığı kaldırıldı — durum ve aksiyon dışarıdan enjekte edilir.
+final class ReportsCsvExportButton extends StatelessWidget {
+  const ReportsCsvExportButton({
+    super.key,
+    required this.isExporting,
+    required this.onExport,
+  });
+
+  final bool isExporting;
+  final VoidCallback onExport;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ReportsCubit, ReportsState>(
-      builder: (context, state) {
-        final isExporting = state is ReportsExporting;
-
-        return SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: isExporting
-                ? null
-                : () => context.read<ReportsCubit>().exportCsv(),
-            icon: isExporting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.download_rounded,
-                    color: Colors.white, size: 18),
-            label: Text(
-              isExporting ? AppStrings.exporting : AppStrings.csvExport,
-              style: AppTextStyles.buttonText,
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              elevation: 0,
-            ),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: isExporting ? null : onExport,
+        icon: isExporting
+            ? SizedBox(
+                width: AppSizes.iconSm,
+                height: AppSizes.iconSm,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: context.colors.onPrimary,
+                ),
+              )
+            : Icon(
+                Icons.download_rounded,
+                color: context.colors.onPrimary,
+                size: AppSizes.iconMd - 2,
+              ),
+        label: Text(
+          isExporting ? AppStrings.exporting : AppStrings.csvExport,
+          style: context.textTheme.labelLarge?.copyWith(
+            color: context.colors.onPrimary,
           ),
-        );
-      },
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: context.colors.primary,
+          disabledBackgroundColor: context.colors.primary.withOpacity(0.6),
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.md + 2),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.baseBorderRadius,
+          ),
+          elevation: 0,
+        ),
+      ),
     );
   }
 }

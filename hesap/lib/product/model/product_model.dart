@@ -1,7 +1,7 @@
 import 'package:hesap/feature/sub_feature/product/domain/entities/product.dart';
 import 'package:hive_ce/hive.dart';
 
-part '../../product/model/product_model.g.dart';
+part 'product_model.g.dart';
 
 @HiveType(typeId: 0)
 class ProductModel extends HiveObject {

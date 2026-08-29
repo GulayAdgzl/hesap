@@ -1,16 +1,31 @@
 import '../../core/constants/app_string.dart';
 import '../../feature/settings/domain/entities/app_settings.dart';
 
-class AppSettingsModel extends AppSettings {
+/// [AppSettings] entity'sinin veri katmanı karşılığı.
+///
+/// [AppSettings] bir `final class` olduğu için **extends edilemez**.
+/// Bu model, `AppSettings` nesnesini kompozisyon yoluyla taşır ve
+/// serileştirme/deserileştirme işlemlerini üstlenir.
+final class AppSettingsModel {
+  final double criticalStockThreshold;
+  final int forecastPeriod;
+  final bool criticalStockNotification;
+  final bool dailySummary;
+  final bool productionForecast;
+  final bool darkMode;
+  final String language;
+
   const AppSettingsModel({
-    required super.criticalStockThreshold,
-    required super.forecastPeriod,
-    required super.criticalStockNotification,
-    required super.dailySummary,
-    required super.productionForecast,
-    required super.darkMode,
-    required super.language,
+    required this.criticalStockThreshold,
+    required this.forecastPeriod,
+    required this.criticalStockNotification,
+    required this.dailySummary,
+    required this.productionForecast,
+    required this.darkMode,
+    required this.language,
   });
+
+  // ── Fabrikalar ─────────────────────────────────────────────────────────────
 
   factory AppSettingsModel.fromMap(Map<String, dynamic> map) {
     return AppSettingsModel(
@@ -33,6 +48,33 @@ class AppSettingsModel extends AppSettings {
     );
   }
 
+  factory AppSettingsModel.defaults() {
+    return AppSettingsModel(
+      criticalStockThreshold: AppStrings.defaultCriticalStockThreshold,
+      forecastPeriod: AppStrings.defaultForecastPeriod,
+      criticalStockNotification: AppStrings.defaultCriticalStockNotification,
+      dailySummary: AppStrings.defaultDailySummary,
+      productionForecast: AppStrings.defaultProductionForecast,
+      darkMode: AppStrings.defaultDarkMode,
+      language: AppStrings.defaultLanguage,
+    );
+  }
+
+  /// Domain entity'den model oluşturur.
+  factory AppSettingsModel.fromEntity(AppSettings entity) {
+    return AppSettingsModel(
+      criticalStockThreshold: entity.criticalStockThreshold,
+      forecastPeriod: entity.forecastPeriod,
+      criticalStockNotification: entity.criticalStockNotification,
+      dailySummary: entity.dailySummary,
+      productionForecast: entity.productionForecast,
+      darkMode: entity.darkMode,
+      language: entity.language,
+    );
+  }
+
+  // ── Dönüştürücüler ─────────────────────────────────────────────────────────
+
   Map<String, dynamic> toMap() {
     return {
       AppStrings.keyCriticalStockThreshold: criticalStockThreshold,
@@ -45,15 +87,16 @@ class AppSettingsModel extends AppSettings {
     };
   }
 
-  factory AppSettingsModel.defaults() {
-    return AppSettingsModel(
-      criticalStockThreshold: AppStrings.defaultCriticalStockThreshold,
-      forecastPeriod: AppStrings.defaultForecastPeriod,
-      criticalStockNotification: AppStrings.defaultCriticalStockNotification,
-      dailySummary: AppStrings.defaultDailySummary,
-      productionForecast: AppStrings.defaultProductionForecast,
-      darkMode: AppStrings.defaultDarkMode,
-      language: AppStrings.defaultLanguage,
+  /// Modeli domain entity'ye dönüştürür.
+  AppSettings toEntity() {
+    return AppSettings(
+      criticalStockThreshold: criticalStockThreshold,
+      forecastPeriod: forecastPeriod,
+      criticalStockNotification: criticalStockNotification,
+      dailySummary: dailySummary,
+      productionForecast: productionForecast,
+      darkMode: darkMode,
+      language: language,
     );
   }
 
@@ -76,18 +119,6 @@ class AppSettingsModel extends AppSettings {
       productionForecast: productionForecast ?? this.productionForecast,
       darkMode: darkMode ?? this.darkMode,
       language: language ?? this.language,
-    );
-  }
-
-  AppSettingsModel fromEntity(AppSettings entity) {
-    return AppSettingsModel(
-      criticalStockThreshold: entity.criticalStockThreshold,
-      forecastPeriod: entity.forecastPeriod,
-      criticalStockNotification: entity.criticalStockNotification,
-      dailySummary: entity.dailySummary,
-      productionForecast: entity.productionForecast,
-      darkMode: entity.darkMode,
-      language: entity.language,
     );
   }
 }

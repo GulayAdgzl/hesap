@@ -1,20 +1,26 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hesap/module/notification/notification_type.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../module/notification/notification_service.dart';
 
-class NotificationServiceImpl implements NotificationService {
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+final class NotificationServiceImpl implements NotificationService {
+  NotificationServiceImpl({
+    FlutterLocalNotificationsPlugin? plugin,
+  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
-  static const int _idCriticalStock = 1001;
-  static const int _idDailySummary = 1002;
-  static const int _idProductionForecast = 1003;
+  final FlutterLocalNotificationsPlugin _plugin;
 
-  static const String _channelCriticalStock = 'critical_stock';
-  static const String _channelDailySummary = 'daily_summary';
-  static const String _channelProductionForecast = 'production_forecast';
+  final _tapController = StreamController<NotificationResponse>.broadcast();
+
+  @override
+  Stream<NotificationResponse> get onNotificationTap => _tapController.stream;
+
+  // ── Kurulum ─────────────────────────────────────────────────────────────
 
   @override
   Future<void> init() async {
@@ -27,132 +33,115 @@ class NotificationServiceImpl implements NotificationService {
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-
-    await _plugin.initialize(
-      settings: const InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      ),
-      onDidReceiveNotificationResponse: _onNotificationTap,
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
 
-    await _createChannels();
+    try {
+      await _plugin.initialize(
+        settings: initSettings,
+        onDidReceiveNotificationResponse: _tapController.add,
+      );
+      await _createChannels();
+    } catch (e, st) {
+      _logError('init', e, st);
+    }
   }
 
   @override
   Future<void> requestPermission() async {
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+    try {
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+      final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      await androidPlugin?.requestNotificationsPermission();
+      await androidPlugin?.requestExactAlarmsPermission();
+    } catch (e, st) {
+      _logError('requestPermission', e, st);
+    }
   }
+
+  // ── Bildirimler ─────────────────────────────────────────────────────────
 
   @override
   Future<void> showCriticalStockNotification({
     required String productName,
     required double threshold,
   }) async {
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channelCriticalStock,
-        'Kritik Stok',
-        channelDescription: 'Stok kritik seviyeye düştüğünde bildirim',
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
-      ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    await _plugin.show(
-      id: _idCriticalStock,
-      title: '⚠️ Kritik Stok Uyarısı',
-      body:
-          '$productName stoku %${threshold.toStringAsFixed(0)} eşiğinin altına düştü!',
-      notificationDetails: details,
-    );
+    const type = NotificationType.criticalStock;
+    try {
+      await _plugin.show(
+        id: type.id,
+        title: '⚠️ Kritik Stok Uyarısı',
+        body: '$productName stoku %${threshold.toStringAsFixed(0)} '
+            'eşiğinin altına düştü!',
+        notificationDetails: type.detailsWith(),
+      );
+    } catch (e, st) {
+      _logError('showCriticalStockNotification', e, st);
+    }
   }
 
   @override
-  Future<void> scheduleDailySummary({required bool enabled}) async {
-    if (!enabled) {
-      await _plugin.cancel(id: _idDailySummary);
-      return;
-    }
-
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channelDailySummary,
-        'Günlük Özet',
-        channelDescription: 'Her sabah 08:00\'de günlük stok özeti',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        icon: '@mipmap/ic_launcher',
-      ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: false,
-        presentSound: false,
-      ),
-    );
-
-    await _plugin.zonedSchedule(
-      id: _idDailySummary,
-      title: '📊 Günlük Stok Özeti',
-      body: 'Bugünün stok durumunu gözden geçir.',
-      scheduledDate: _nextInstanceOf(hour: 8, minute: 0),
-      notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
-  }
+  Future<void> scheduleDailySummary({required bool enabled}) => _schedule(
+        type: NotificationType.dailySummary,
+        enabled: enabled,
+        hour: 8,
+        minute: 0,
+        title: '📊 Günlük Stok Özeti',
+        body: "Bugünün stok durumunu gözden geçir.",
+      );
 
   @override
-  Future<void> scheduleProductionForecast({required bool enabled}) async {
-    if (!enabled) {
-      await _plugin.cancel(id: _idProductionForecast);
-      return;
+  Future<void> scheduleProductionForecast({required bool enabled}) => _schedule(
+        type: NotificationType.productionForecast,
+        enabled: enabled,
+        hour: 20,
+        minute: 0,
+        title: '🏭 Üretim Tahmini',
+        body: 'Yarın için tahmini stok tüketimi hazır.',
+      );
+
+  Future<void> _schedule({
+    required NotificationType type,
+    required bool enabled,
+    required int hour,
+    required int minute,
+    required String title,
+    required String body,
+  }) async {
+    try {
+      if (!enabled) {
+        await _plugin.cancel(id: type.id);
+        return;
+      }
+      await _plugin.zonedSchedule(
+        id: type.id,
+        title: title,
+        body: body,
+        scheduledDate: _nextInstanceOf(hour: hour, minute: minute),
+        notificationDetails: type.detailsWith(),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+    } catch (e, st) {
+      _logError('_schedule(${type.name})', e, st);
     }
-
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channelProductionForecast,
-        'Üretim Tahmini',
-        channelDescription: 'Yarın için üretim tahmini bildirimi',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        icon: '@mipmap/ic_launcher',
-      ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: false,
-        presentSound: false,
-      ),
-    );
-
-    await _plugin.zonedSchedule(
-      id: _idProductionForecast,
-      title: '🏭 Üretim Tahmini',
-      body: 'Yarın için tahmini stok tüketimi hazır.',
-      scheduledDate: _nextInstanceOf(hour: 20, minute: 0),
-      notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
   }
 
   @override
   Future<void> cancelAll() async {
-    await _plugin.cancelAll();
+    try {
+      await _plugin.cancelAll();
+    } catch (e, st) {
+      _logError('cancelAll', e, st);
+    }
   }
 
   @override
@@ -164,37 +153,18 @@ class NotificationServiceImpl implements NotificationService {
     await scheduleDailySummary(enabled: dailySummary);
     await scheduleProductionForecast(enabled: productionForecast);
     if (!criticalStockNotification) {
-      await _plugin.cancel(id: _idCriticalStock);
+      await _plugin.cancel(id: NotificationType.criticalStock.id);
     }
   }
 
-  Future<void> _createChannels() async {
-    const channels = [
-      AndroidNotificationChannel(
-        _channelCriticalStock,
-        'Kritik Stok',
-        description: 'Stok kritik seviyeye düştüğünde bildirim',
-        importance: Importance.high,
-      ),
-      AndroidNotificationChannel(
-        _channelDailySummary,
-        'Günlük Özet',
-        description: 'Her sabah 08:00\'de günlük stok özeti',
-        importance: Importance.defaultImportance,
-      ),
-      AndroidNotificationChannel(
-        _channelProductionForecast,
-        'Üretim Tahmini',
-        description: 'Yarın için üretim tahmini bildirimi',
-        importance: Importance.defaultImportance,
-      ),
-    ];
+  // ── Yardımcılar ─────────────────────────────────────────────────────────
 
+  Future<void> _createChannels() async {
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
-    for (final channel in channels) {
-      await androidPlugin?.createNotificationChannel(channel);
+    for (final type in NotificationType.values) {
+      await androidPlugin?.createNotificationChannel(type.androidChannel);
     }
   }
 
@@ -208,5 +178,9 @@ class NotificationServiceImpl implements NotificationService {
     return scheduled;
   }
 
-  void _onNotificationTap(NotificationResponse response) {}
+  void _logError(String context, Object error, StackTrace st) {
+    debugPrint('[NotificationService] $context failed: $error\n$st');
+  }
+
+  void dispose() => _tapController.close();
 }

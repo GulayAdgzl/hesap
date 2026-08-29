@@ -16,7 +16,9 @@ class SettingsRepositoryImpl implements SettingsRepository {
     try {
       final map = await localDataSource.getSettings();
       final model = AppSettingsModel.fromMap(map);
-      return Right(model);
+
+      // ✅ FIX: Model -> Entity dönüşümü yapıldı
+      return Right(model.toEntity());
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }

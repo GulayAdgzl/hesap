@@ -17,15 +17,15 @@ final class ApplicationInitializer {
   }
 
   static Future<void> prepare() async {
+    await _initHive(); // 1) Önce adapter'lar register edilsin (sıralı, await ile)
+
     await Future.wait([
-      _initHive(),
-      _initDependencyInjection(),
+      _initDependencyInjection(), // 2) Artık openBox güvenli
       _initPlatformSpecific(),
     ]);
 
     await _initPostDiServices();
   }
-
   // ─── Private Helpers ────────────────────────────────────────────────────────
 
   static Future<void> _initHive() async {

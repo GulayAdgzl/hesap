@@ -12,6 +12,37 @@ class AppStrings {
   // Birimler
   static const units = ['kg', 'litre', 'adet', 'gram', 'paket'];
 
+  // Ana Sayfa (Home) sayfası
+  static const homeTotalConsumption = 'Toplam Tüketim';
+  static const homeTodayUnit = 'Bugün · kg/gün';
+  static const homeDailyCost = 'Günlük Maliyet';
+  static const homeVsYesterday = 'dün ile karşılaştır';
+  static const homeCriticalStock = 'Kritik Stok';
+  static const homeCriticalStockSubtitle = 'ürün kritik eşikte';
+  static const homeTopConsumed = 'En Çok Tüketilen';
+  static const homeToday = 'bugün';
+  static const homeNoDataToday = 'Bugün veri yok';
+  static const homeConsumptionFlow = 'Tüketim Akışı';
+  static const homeLast7Days = 'Son 7 gün';
+  static const homeWeeklyConsumption = 'Haftalık Tüketim';
+  static const homeVsLastWeek = 'geçen haftaya göre';
+  static const homeActualLegend = 'Gerçek';
+  static const homeForecastLegend = 'Tahmin';
+  static const homeAlerts = 'Uyarılar';
+  static const homeAlertCriticalPrefix = 'Kritik Stok: ';
+  static const homeAlertRemainingPrefix = 'Kalan';
+  static const homeAlertEstimatedEnd = 'Tahmini bitiş';
+  static const homeProductStocks = 'Ürün Stokları';
+  static const homeSeeAll = 'Tümü →';
+  static const homeTomorrowForecast = 'Yarın Ne Üretmeliyim?';
+  static const homeAiForecast = 'AI Tahmin';
+  static const homeProductionForecast = 'Üretim Tahmini';
+  static const homeTrendIncreasing = '↑ Artış trendi';
+  static const homeTrendDecreasing = '↓ Düşüş trendi';
+  static const homeTrendStable = '→ Stabil';
+  static const homeTargetSuffix = 'hedefte';
+  static const homeLoadError = 'Ana sayfa yüklenirken bir hata oluştu';
+
   // Ürünler sayfası
   static const productsTitle = 'Ürünler';
   static const searchHint = 'Ürün ara...';
@@ -135,4 +166,6 @@ class AppStrings {
   static const bool defaultProductionForecast = false;
   static const bool defaultDarkMode = false;
   static const String defaultLanguage = 'Türkçe';
+
+  static const String retry = 'Yeniden Dene';
 }

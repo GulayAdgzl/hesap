@@ -1,19 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hesap/core/constants/app_colors.dart';
 import 'package:hesap/core/constants/app_string.dart';
-import 'package:hesap/feature/reports/presentation/bloc/reports_cubit.dart';
-import 'package:hesap/feature/reports/presentation/pages/reports_page.dart';
-import 'package:hesap/feature/settings/presentation/bloc/settings_cubit.dart';
-import 'package:hesap/feature/settings/presentation/pages/settings_page.dart';
-import 'package:hesap/feature/stock/presentation/bloc/daily_entry_cubit.dart';
-import 'package:hesap/feature/stock/presentation/pages/daily_entry_page.dart';
-import 'package:hesap/feature/sub_feature/product/pages/products_page.dart';
-import 'package:hesap/feature/sub_feature/product/presentation/bloc/product_cubit.dart';
-import 'package:hesap/product/initialize/injection_container.dart' as di;
+import 'package:hesap/core/theme/theme.dart';
+import 'package:hesap/feature/home/domain/usecases/get_home_summary.dart';
+import 'package:hesap/feature/home/presentation/view-model/home_view_model.dart';
+import 'package:hesap/feature/home/presentation/view/home_page.dart';
+import 'package:hesap/feature/reports/domain/usecases/get_report_summary_use_case.dart';
+import 'package:hesap/feature/reports/presentation/view/reports_page.dart';
+import 'package:hesap/feature/reports/presentation/view_model/reports_view_model.dart';
+import 'package:hesap/feature/settings/domain/repositories/settings_repository.dart';
+import 'package:hesap/feature/settings/domain/usecases/get_settings.dart';
+import 'package:hesap/feature/settings/domain/usecases/save_settings.dart';
+import 'package:hesap/feature/settings/presentation/view/settings_page.dart';
+import 'package:hesap/feature/settings/presentation/view_model/settings_view_model.dart';
+import 'package:hesap/feature/stock/domain/usecases/get_last_entry_usecase.dart';
+import 'package:hesap/feature/stock/domain/usecases/save_daily_entries_usecase.dart';
+import 'package:hesap/feature/stock/presentation/view/daily_entry_page.dart';
+import 'package:hesap/feature/stock/presentation/view_model/daily_entry_view_model.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/add_product_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/delete_product_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/get_all_products_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/usecases/update_product_usecase.dart';
+import 'package:hesap/feature/sub_feature/product/view/products_page.dart';
+import 'package:hesap/module/csv_export/csv_export_service.dart';
+import 'package:hesap/module/notification/notification_service.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  const MainNavigation({
+    super.key,
+    // Home
+    required this.getHomeSummary,
+    // Settings
+    required this.getSettings,
+    required this.saveSetting,
+    required this.settingsRepository,
+    required this.notificationService,
+    // Products
+    required this.getAllProducts,
+    required this.addProduct,
+    required this.updateProduct,
+    required this.deleteProduct,
+    // Daily Entry
+    required this.saveDailyEntries,
+    required this.getLastEntry,
+    // Reports
+    required this.getReportSummary,
+    required this.csvExportService,
+  });
+
+  final GetHomeSummary getHomeSummary;
+
+  final GetSettings getSettings;
+  final SaveSetting saveSetting;
+  final SettingsRepository settingsRepository;
+  final NotificationService notificationService;
+
+  final GetAllProductsUseCase getAllProducts;
+  final AddProductUseCase addProduct;
+  final UpdateProductUseCase updateProduct;
+  final DeleteProductUseCase deleteProduct;
+
+  final SaveDailyEntriesUseCase saveDailyEntries;
+  final GetLastEntryForProductUseCase getLastEntry;
+
+  final GetReportSummaryUseCase getReportSummary;
+  final CsvExportService csvExportService;
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -22,72 +72,164 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  void _onTap(int index) => setState(() => _currentIndex = index);
+  // ── Sekme indeksleri ────────────────────────────────────────────────────
+  static const int _homeIndex = 0;
+  static const int _productsIndex = 1;
+  static const int _dailyIndex = 2;
+  static const int _reportsIndex = 3;
+  static const int _settingsIndex = 4;
+
+  // ── ViewModel'ler burada yaşıyor ─────────────────────────────────────────
+  // IndexedStack initState'i tab değişiminde tekrar tetiklemediği için tüm
+  // ViewModel'ler shell seviyesinde tutulur ve _onTap içinde tazelenir.
+
+  late final DailyEntryViewModel _dailyEntryViewModel = DailyEntryViewModel(
+    getAllProducts: widget.getAllProducts,
+    saveDailyEntries: widget.saveDailyEntries,
+    getLastEntry: widget.getLastEntry,
+  )..loadProducts();
+
+  late final HomeViewModel _homeViewModel = HomeViewModel(
+    getHomeSummary: widget.getHomeSummary,
+  )..loadHome();
+
+  late final ReportsViewModel _reportsViewModel = ReportsViewModel(
+    getReportSummary: widget.getReportSummary,
+    csvExportService: widget.csvExportService,
+  )..load();
+
+  // Settings de aynı desende: DailyEntryViewModel gibi ilk yükleme burada,
+  // tab'a her girişte _onTap içinde tazeleniyor.
+  late final SettingsViewModel _settingsViewModel = SettingsViewModel(
+    getSettings: widget.getSettings,
+    saveSetting: widget.saveSetting,
+    repository: widget.settingsRepository,
+    notificationService: widget.notificationService,
+  )..loadSettings();
+
+  void _onTap(int index) {
+    setState(() => _currentIndex = index);
+
+    if (index == _dailyIndex) {
+      _dailyEntryViewModel.loadProducts();
+    }
+
+    if (index == _homeIndex) {
+      _homeViewModel.refresh();
+    }
+
+    if (index == _reportsIndex) {
+      _reportsViewModel.load();
+    }
+
+    if (index == _settingsIndex) {
+      // DailyEntry'deki loadProducts() ile aynı mantık: tab'a her girişte
+      // diskten tekrar oku, başka bir yerden değişmiş olabilecek ayarları
+      // yakala. Reports/Home gibi filtre/scroll korunacak bir state yok,
+      // bu yüzden ayrı bir refresh() eklemeye gerek görülmedi.
+      _settingsViewModel.loadSettings();
+    }
+  }
+
+  late final List<Widget> _pages = [
+    HomePage(viewModel: _homeViewModel),
+    ProductsPage(
+      getAllProducts: widget.getAllProducts,
+      addProduct: widget.addProduct,
+      updateProduct: widget.updateProduct,
+      deleteProduct: widget.deleteProduct,
+    ),
+    DailyEntryPage(viewModel: _dailyEntryViewModel),
+    ReportsPage(viewModel: _reportsViewModel),
+    SettingsPage(viewModel: _settingsViewModel),
+  ];
+
+  @override
+  void dispose() {
+    _dailyEntryViewModel.dispose();
+    _homeViewModel.dispose();
+    _reportsViewModel.dispose(); // ⚠️ önceden eksikti, ekstra düzeltme
+    _settingsViewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => di.sl<ProductCubit>()),
-        BlocProvider(create: (_) => di.sl<DailyEntryCubit>()),
-        BlocProvider(create: (_) => di.sl<ReportsCubit>()),
-        BlocProvider(create: (_) => di.sl<SettingsCubit>()),
-      ],
-      child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: const [
-            PlaceholderPage(
-                label: AppStrings.navHome, icon: Icons.home_rounded),
-            ProductsPage(),
-            DailyEntryPage(),
-            ReportsPage(),
-            SettingsPage(),
-          ],
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
+      bottomNavigationBar: _BottomNav(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
+      ),
+    );
+  }
+}
+
+// ── Bottom navigation bar ──────────────────────────────────────────────────
+// (değişmedi)
+
+final class _BottomNav extends StatelessWidget {
+  const _BottomNav({
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  final int currentIndex;
+  final void Function(int) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appTheme.cardBackground,
+        border: Border(
+          top: BorderSide(color: context.appTheme.divider, width: 1),
         ),
-        bottomNavigationBar: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(top: BorderSide(color: Color(0xFFEDEAF8), width: 1)),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  _NavItem(
-                      icon: Icons.home_rounded,
-                      label: AppStrings.navHome,
-                      index: 0,
-                      current: _currentIndex,
-                      onTap: _onTap),
-                  _NavItem(
-                      icon: Icons.inventory_2_rounded,
-                      label: AppStrings.navProducts,
-                      index: 1,
-                      current: _currentIndex,
-                      onTap: _onTap),
-                  _NavItem(
-                      icon: Icons.edit_note_rounded,
-                      label: AppStrings.navDaily,
-                      index: 2,
-                      current: _currentIndex,
-                      onTap: _onTap),
-                  _NavItem(
-                      icon: Icons.bar_chart_rounded,
-                      label: AppStrings.navReports,
-                      index: 3,
-                      current: _currentIndex,
-                      onTap: _onTap),
-                  _NavItem(
-                      icon: Icons.settings_rounded,
-                      label: AppStrings.navSettings,
-                      index: 4,
-                      current: _currentIndex,
-                      onTap: _onTap),
-                ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
+          child: Row(
+            children: [
+              _NavItem(
+                icon: Icons.home_rounded,
+                label: AppStrings.navHome,
+                index: 0,
+                current: currentIndex,
+                onTap: onTap,
               ),
-            ),
+              _NavItem(
+                icon: Icons.inventory_2_rounded,
+                label: AppStrings.navProducts,
+                index: 1,
+                current: currentIndex,
+                onTap: onTap,
+              ),
+              _NavItem(
+                icon: Icons.edit_note_rounded,
+                label: AppStrings.navDaily,
+                index: 2,
+                current: currentIndex,
+                onTap: onTap,
+              ),
+              _NavItem(
+                icon: Icons.bar_chart_rounded,
+                label: AppStrings.navReports,
+                index: 3,
+                current: currentIndex,
+                onTap: onTap,
+              ),
+              _NavItem(
+                icon: Icons.settings_rounded,
+                label: AppStrings.navSettings,
+                index: 4,
+                current: currentIndex,
+                onTap: onTap,
+              ),
+            ],
           ),
         ),
       ),
@@ -95,13 +237,10 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 }
 
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int index;
-  final int current;
-  final void Function(int) onTap;
+// ── Nav item ───────────────────────────────────────────────────────────────
+// (değişmedi)
 
+final class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
     required this.label,
@@ -110,9 +249,17 @@ class _NavItem extends StatelessWidget {
     required this.onTap,
   });
 
+  final IconData icon;
+  final String label;
+  final int index;
+  final int current;
+  final void Function(int) onTap;
+
   @override
   Widget build(BuildContext context) {
     final isActive = index == current;
+    final color = isActive ? context.colors.primary : context.appTheme.muted;
+
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(index),
@@ -120,60 +267,21 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon,
-                size: 22,
-                color: isActive ? AppColors.primary : AppColors.muted),
+            Icon(icon, size: AppSizes.iconMd + 2, color: color),
             const SizedBox(height: 3),
-            Text(label,
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  color: isActive ? AppColors.primary : AppColors.muted,
-                )),
+            Text(
+              label,
+              style: context.textTheme.labelSmall?.copyWith(color: color),
+            ),
             const SizedBox(height: 3),
-            if (isActive)
-              Container(
-                width: 4,
-                height: 4,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-              )
-            else
-              const SizedBox(height: 4),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PlaceholderPage extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  const PlaceholderPage({super.key, required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: AppColors.muted),
-            const SizedBox(height: 12),
-            Text(label,
-                style: const TextStyle(
-                  fontFamily: 'Syne',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  color: AppColors.dark,
-                )),
-            const SizedBox(height: 6),
-            const Text(AppStrings.navComingSoon,
-                style: TextStyle(color: AppColors.muted, fontSize: 13)),
+            Container(
+              width: AppSizes.xs,
+              height: AppSizes.xs,
+              decoration: BoxDecoration(
+                color: isActive ? context.colors.primary : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+            ),
           ],
         ),
       ),

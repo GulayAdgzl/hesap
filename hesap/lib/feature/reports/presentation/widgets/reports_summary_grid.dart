@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_colors.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 import 'package:hesap/module/report_summary/entities/report_summary.dart';
 
 class ReportsSummaryGrid extends StatelessWidget {
@@ -18,42 +17,46 @@ class ReportsSummaryGrid extends StatelessWidget {
 
     return GridView.count(
       crossAxisCount: 2,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
+      crossAxisSpacing: AppSizes.md,
+      mainAxisSpacing: AppSizes.md,
       childAspectRatio: 1.55,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _SummaryCard(
           icon: Icons.scale_rounded,
-          iconColor: AppColors.primary,
-          iconBg: AppColors.primaryLight,
+          iconColor: context.colors.primary,
+          iconBg: context.appTheme.brandSecondary,
           label: 'Toplam Tüketim',
           value: summary.totalConsumption.toString(),
         ),
         _SummaryCard(
           icon: Icons.account_balance_wallet_rounded,
-          iconColor: AppColors.success,
-          iconBg: AppColors.successLight,
+          iconColor: context.appTheme.success,
+          iconBg: context.appTheme.successContainer,
           label: 'Toplam Maliyet',
-          value: '₺${summary.totalCost.toStringAsFixed(1)}K'
-              .replaceAll(RegExp(r'(\d+\.\d+)K'), _formatK(summary.totalCost)),
+          value: '₺${_formatK(summary.totalCost)}',
         ),
         _SummaryCard(
           icon: Icons.trending_up_rounded,
-          iconColor: changePositive ? AppColors.danger : AppColors.success,
-          iconBg:
-              changePositive ? AppColors.dangerLight : AppColors.successLight,
+          iconColor: changePositive
+              ? context.appTheme.danger
+              : context.appTheme.success,
+          iconBg: changePositive
+              ? context.appTheme.dangerContainer
+              : context.appTheme.successContainer,
           label: 'Geçen haftaya göre',
           value: changeText ?? '—',
           valueColor: change == null
-              ? AppColors.muted
-              : (changePositive ? AppColors.danger : AppColors.success),
+              ? context.appTheme.muted
+              : (changePositive
+                  ? context.appTheme.danger
+                  : context.appTheme.success),
         ),
         _SummaryCard(
           icon: Icons.bolt_rounded,
-          iconColor: AppColors.warning,
-          iconBg: AppColors.warningLight,
+          iconColor: context.appTheme.warning,
+          iconBg: context.appTheme.warningContainer,
           label: 'Günlük ortalama',
           value: '₺${_formatK(summary.dailyAverageCost)}',
         ),
@@ -62,9 +65,7 @@ class ReportsSummaryGrid extends StatelessWidget {
   }
 
   String _formatK(double value) {
-    if (value >= 1000) {
-      return '${(value / 1000).toStringAsFixed(1)}K';
-    }
+    if (value >= 1000) return '${(value / 1000).toStringAsFixed(1)}K';
     return value.toStringAsFixed(0);
   }
 }
@@ -89,13 +90,13 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSizes.md + 2),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        color: context.appTheme.cardBackground,
+        borderRadius: AppRadius.lgBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.07),
+            color: context.colors.primary.withOpacity(0.07),
             blurRadius: 14,
             offset: const Offset(0, 2),
           ),
@@ -106,26 +107,31 @@ class _SummaryCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: AppSizes.xxxl - 6,
+            height: AppSizes.xxxl - 6,
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.smBorderRadius,
             ),
-            child: Icon(icon, size: 16, color: iconColor),
+            child: Icon(icon, size: AppSizes.iconSm + 4, color: iconColor),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 value,
-                style: AppTextStyles.quantityLarge.copyWith(
+                style: context.textTheme.titleLarge?.copyWith(
                   fontSize: 20,
                   color: valueColor,
                 ),
               ),
               const SizedBox(height: 2),
-              Text(label, style: AppTextStyles.caption),
+              Text(
+                label,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.appTheme.muted,
+                ),
+              ),
             ],
           ),
         ],

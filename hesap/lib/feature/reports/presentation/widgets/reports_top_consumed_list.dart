@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_colors.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 import 'package:hesap/module/report_summary/entities/top_consumed_item.dart';
 
 class ReportsTopConsumedList extends StatelessWidget {
@@ -11,13 +10,13 @@ class ReportsTopConsumedList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.base),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        color: context.appTheme.cardBackground,
+        borderRadius: AppRadius.lgBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.07),
+            color: context.colors.primary.withOpacity(0.07),
             blurRadius: 14,
             offset: const Offset(0, 2),
           ),
@@ -29,17 +28,29 @@ class ReportsTopConsumedList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('En Çok Tüketilen', style: AppTextStyles.sectionTitle),
-              Text('Bu hafta', style: AppTextStyles.caption),
+              Text(
+                'En Çok Tüketilen',
+                style: context.textTheme.titleSmall,
+              ),
+              Text(
+                'Bu hafta',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.appTheme.muted,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.md),
           if (items.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child:
-                    Text('Veri yok', style: TextStyle(color: AppColors.muted)),
+                padding: const EdgeInsets.symmetric(vertical: AppSizes.base),
+                child: Text(
+                  'Veri yok',
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: context.appTheme.muted,
+                  ),
+                ),
               ),
             )
           else
@@ -67,59 +78,75 @@ class _TopConsumedRow extends StatelessWidget {
     required this.isLast,
   });
 
+  // Sabit podyum renkleri — tema ile değişmez, tasarım kararı
+  static const Color _gold = Color(0xFFF5A623);
+  static const Color _silver = Color(0xFF9090A8);
+  static const Color _bronze = Color(0xFFCD7F32);
+
   @override
   Widget build(BuildContext context) {
+    final rankColor = switch (rank) {
+      1 => _gold,
+      2 => _silver,
+      3 => _bronze,
+      _ => context.appTheme.muted,
+    };
+
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm + 2),
           child: Row(
             children: [
               // Rank badge
               Container(
-                width: 28,
-                height: 28,
+                width: AppSizes.xxl - 4,
+                height: AppSizes.xxl - 4,
                 decoration: BoxDecoration(
-                  color: _rankColor(rank).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
+                  color: rankColor.withOpacity(0.12),
+                  borderRadius: AppRadius.smBorderRadius,
                 ),
                 child: Center(
                   child: Text(
                     '$rank',
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: context.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: _rankColor(rank),
+                      color: rankColor,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSizes.md),
               // Ürün ikonu
               Container(
-                width: 36,
-                height: 36,
+                width: AppSizes.xxl + 4,
+                height: AppSizes.xxl + 4,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(10),
+                  color: context.appTheme.brandSecondary,
+                  borderRadius: AppRadius.smBorderRadius,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.inventory_2_rounded,
-                  size: 16,
-                  color: AppColors.primary,
+                  size: AppSizes.iconSm,
+                  color: context.colors.primary,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSizes.sm + 2),
               // Ad ve miktar
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.productName, style: AppTextStyles.productName),
+                    Text(
+                      item.productName,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       '${item.totalConsumed} ${item.productUnit}',
-                      style: AppTextStyles.productMeta,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.appTheme.muted,
+                      ),
                     ),
                   ],
                 ),
@@ -127,7 +154,7 @@ class _TopConsumedRow extends StatelessWidget {
               // Maliyet
               Text(
                 '₺${_formatCost(item.totalCost)}',
-                style: AppTextStyles.quantityLarge.copyWith(fontSize: 15),
+                style: context.textTheme.titleSmall?.copyWith(fontSize: 15),
               ),
             ],
           ),
@@ -136,23 +163,10 @@ class _TopConsumedRow extends StatelessWidget {
           Divider(
             height: 1,
             thickness: 1,
-            color: AppColors.inputBorder,
+            color: context.appTheme.divider,
           ),
       ],
     );
-  }
-
-  Color _rankColor(int rank) {
-    switch (rank) {
-      case 1:
-        return const Color(0xFFF5A623); // altın
-      case 2:
-        return const Color(0xFF9090A8); // gümüş
-      case 3:
-        return const Color(0xFFCD7F32); // bronz
-      default:
-        return AppColors.muted;
-    }
   }
 
   String _formatCost(double cost) {

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'package:hesap/core/constants/app_colors.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 
 class SettingsActionRow extends StatelessWidget {
   final IconData icon;
-  final BoxDecoration iconBoxDecoration;
   final Color iconColor;
+  final Color iconBg;
   final String title;
   final String? subtitle;
   final String? value;
@@ -15,8 +13,8 @@ class SettingsActionRow extends StatelessWidget {
   const SettingsActionRow({
     super.key,
     required this.icon,
-    required this.iconBoxDecoration,
     required this.iconColor,
+    required this.iconBg,
     required this.title,
     this.subtitle,
     this.value,
@@ -29,39 +27,55 @@ class SettingsActionRow extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.base,
+          vertical: AppSizes.md,
+        ),
         child: Row(
           children: [
-            // Icon box
+            // İkon kutusu
             Container(
-              width: 36,
-              height: 36,
-              decoration: iconBoxDecoration,
-              child: Icon(icon, color: iconColor, size: 18),
+              width: AppSizes.xxl + AppSizes.xs,
+              height: AppSizes.xxl + AppSizes.xs,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: AppRadius.smBorderRadius,
+              ),
+              child: Icon(icon, color: iconColor, size: AppSizes.iconMd - 2),
             ),
-            const SizedBox(width: 12),
-            // Title + subtitle
+            const SizedBox(width: AppSizes.md),
+            // Başlık + alt başlık
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTextStyles.settingsRowTitle),
+                  Text(title, style: context.textTheme.labelLarge),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
-                    Text(subtitle!, style: AppTextStyles.settingsRowSubtitle),
+                    Text(
+                      subtitle!,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.appTheme.muted,
+                      ),
+                    ),
                   ],
                 ],
               ),
             ),
-            // Value + chevron
+            // Değer + chevron
             if (value != null) ...[
-              Text(value!, style: AppTextStyles.settingsRowValue),
-              const SizedBox(width: 4),
+              Text(
+                value!,
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: context.appTheme.muted,
+                ),
+              ),
+              const SizedBox(width: AppSizes.xs),
             ],
             Icon(
               Icons.chevron_right_rounded,
-              color: AppColors.settingsChevron,
-              size: 20,
+              color: context.appTheme.inputHint,
+              size: AppSizes.iconMd,
             ),
           ],
         ),

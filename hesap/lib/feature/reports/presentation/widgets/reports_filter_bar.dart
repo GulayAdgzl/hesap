@@ -1,42 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_colors.dart';
-import 'package:hesap/core/constants/app_text_styles.dart';
+import 'package:hesap/core/theme/theme.dart';
 import 'package:hesap/module/report_summary/entities/report_filter.dart';
 
-class ReportsFilterBar extends StatelessWidget {
-  final ReportFilter filter;
-  final ValueChanged<ReportFilter> onChanged;
-
+final class ReportsFilterBar extends StatelessWidget {
   const ReportsFilterBar({
     super.key,
     required this.filter,
     required this.onChanged,
   });
 
+  final ReportFilter filter;
+  final ValueChanged<ReportFilter> onChanged;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.lg,
+        AppSizes.sm,
+        AppSizes.lg,
+        AppSizes.xs,
+      ),
       child: Row(
         children: [
           _FilterChip(
             label: 'Bu Hafta',
             selected: filter.period == ReportPeriod.thisWeek,
-            onTap: () => onChanged(
-              filter.copyWith(period: ReportPeriod.thisWeek),
-            ),
+            onTap: () =>
+                onChanged(filter.copyWith(period: ReportPeriod.thisWeek)),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.sm),
           _FilterChip(
             label: 'Bu Ay',
             selected: filter.period == ReportPeriod.thisMonth,
-            onTap: () => onChanged(
-              filter.copyWith(period: ReportPeriod.thisMonth),
-            ),
+            onTap: () =>
+                onChanged(filter.copyWith(period: ReportPeriod.thisMonth)),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.sm),
           _FilterChip(
-            label: 'Ozel',
+            label: 'Özel',
             selected: filter.period == ReportPeriod.custom,
             onTap: () => _pickCustomRange(context),
           ),
@@ -59,10 +61,10 @@ class ReportsFilterBar extends StatelessWidget {
             ),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: AppColors.primary,
+          colorScheme: ColorScheme.light(
+            primary: context.colors.primary,
             onPrimary: Colors.white,
-            surface: Colors.white,
+            surface: context.appTheme.cardBackground,
           ),
         ),
         child: child!,
@@ -70,27 +72,25 @@ class ReportsFilterBar extends StatelessWidget {
     );
 
     if (picked != null) {
-      onChanged(
-        ReportFilter(
-          period: ReportPeriod.custom,
-          customStart: picked.start,
-          customEnd: picked.end,
-        ),
-      );
+      onChanged(ReportFilter(
+        period: ReportPeriod.custom,
+        customStart: picked.start,
+        customEnd: picked.end,
+      ));
     }
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
+final class _FilterChip extends StatelessWidget {
   const _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
   });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -98,14 +98,19 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.base,
+          vertical: AppSizes.sm - 1,
+        ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          color: selected
+              ? context.colors.primary
+              : context.appTheme.cardBackground,
+          borderRadius: AppRadius.fullBorderRadius,
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.25),
+                    color: context.colors.primary.withOpacity(0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -114,8 +119,8 @@ class _FilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: AppTextStyles.label.copyWith(
-            color: selected ? Colors.white : AppColors.muted,
+          style: context.textTheme.labelMedium?.copyWith(
+            color: selected ? Colors.white : context.appTheme.muted,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           ),
         ),

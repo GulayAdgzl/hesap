@@ -1,20 +1,23 @@
+import 'package:hesap/feature/home/domain/entities/product_stock.dart';
+
+import 'production_forecast.dart';
 import 'stock_alert.dart';
 import 'weekly_consumption.dart';
-import 'production_forecast.dart';
 
 class HomeSummary {
-  final double totalStockValue;
+  final double totalConsumption; // "Toplam Tüketim" kartı — kg/gün
   final double dailyCost;
   final int criticalProductCount;
   final String? topConsumedProductName;
   final double? topConsumedAmount;
   final String? topConsumedUnit;
   final List<StockAlert> alerts;
-  final List<WeeklyConsumption> weeklyConsumption;
+  final WeeklyConsumption weeklyConsumption;
   final List<ProductionForecast> productionForecasts;
+  final List<ProductStock> productStocks;
 
   const HomeSummary({
-    required this.totalStockValue,
+    required this.totalConsumption,
     required this.dailyCost,
     required this.criticalProductCount,
     this.topConsumedProductName,
@@ -23,6 +26,7 @@ class HomeSummary {
     required this.alerts,
     required this.weeklyConsumption,
     required this.productionForecasts,
+    required this.productStocks,
   });
 
   bool get hasCritical => criticalProductCount > 0;
@@ -33,7 +37,7 @@ class HomeSummary {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is HomeSummary &&
-        other.totalStockValue == totalStockValue &&
+        other.totalConsumption == totalConsumption &&
         other.dailyCost == dailyCost &&
         other.criticalProductCount == criticalProductCount &&
         other.topConsumedProductName == topConsumedProductName &&
@@ -43,7 +47,7 @@ class HomeSummary {
 
   @override
   int get hashCode => Object.hash(
-        totalStockValue,
+        totalConsumption,
         dailyCost,
         criticalProductCount,
         topConsumedProductName,
@@ -53,7 +57,7 @@ class HomeSummary {
 
   @override
   String toString() => 'HomeSummary('
-      'totalStockValue: $totalStockValue, '
+      'totalConsumption: $totalConsumption, '
       'dailyCost: $dailyCost, '
       'criticalProductCount: $criticalProductCount, '
       'topConsumedProductName: $topConsumedProductName)';

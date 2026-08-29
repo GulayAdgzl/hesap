@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hesap/core/constants/app_decorations.dart';
 import 'package:hesap/core/constants/app_string.dart';
+import 'package:hesap/core/theme/theme.dart';
 
 class SettingsAvatar extends StatelessWidget {
   const SettingsAvatar({super.key});
@@ -11,17 +11,32 @@ class SettingsAvatar extends StatelessWidget {
 
     return Center(
       child: Container(
-        width: 88,
-        height: 88,
-        decoration: AppDecorations.settingsAvatarContainer,
+        width: AppSizes.huge + AppSizes.xxxl, // 48 + 40 = 88
+        height: AppSizes.huge + AppSizes.xxxl,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              context.colors.primary,
+              context.colors.primary.withOpacity(0.7),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: AppRadius.xlBorderRadius,
+          boxShadow: [
+            BoxShadow(
+              color: context.colors.primary.withOpacity(0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
         child: Center(
           child: Text(
             initials,
-            style: const TextStyle(
-              fontFamily: 'Syne',
-              fontWeight: FontWeight.w800,
-              fontSize: 28,
+            style: context.textTheme.headlineSmall?.copyWith(
               color: Colors.white,
+              fontWeight: FontWeight.w800,
               letterSpacing: 1,
             ),
           ),
