@@ -1,4 +1,4 @@
-package com.example.hesap
+package com.glowdigistudio.hesapp
 
 import io.flutter.embedding.android.FlutterActivity
 

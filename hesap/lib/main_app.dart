@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
     return _DarkModeWrapper(
       getSettings: sl<GetSettings>(),
       builder: (isDark) => MaterialApp(
-        title: 'Hesap App',
+        title: 'A\'la Profiterol',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,

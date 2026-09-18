@@ -1,9 +1,9 @@
 
-name: hesap
+name:  hesap
 description: "A new Flutter project."
 publish_to: "none"
 
-version: 1.0.0+1
+version: 1.0.0+4
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -56,13 +56,17 @@ dependencies:
   # ----------------------------
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
   # ----------------------------
   # Code Generation
   # ----------------------------
